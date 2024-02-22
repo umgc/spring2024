@@ -13,9 +13,9 @@ class FileStorageService {
     _uploadedFiles.add({'name': name, 'path': path});
   }
 
-  Future<void> deleteFile(int index) async {
+  void deleteFile(String name) {
     // Placeholder for Firebase delete logic
-    _uploadedFiles.removeAt(index);
+    _uploadedFiles.removeWhere((file) => file['name'] == name);
   }
 }
 
