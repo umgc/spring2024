@@ -7,6 +7,8 @@ import 'package:file_picker/file_picker.dart';
 // The uploaded files can then be processed or stored by the application, enabling teachers to work with their existing documents or templates.
 
 class FileUploadScreen extends StatefulWidget {
+  const FileUploadScreen({super.key});
+
   @override
   _FileUploadScreenState createState() => _FileUploadScreenState();
 }
