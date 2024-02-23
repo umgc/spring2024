@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'screens/file_upload_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  // Initialize Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MainApp());
 }
 
@@ -9,14 +16,15 @@ class MainApp extends StatelessWidget {
   const MainApp({Key? key});
 
   @override
-Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Main Screen'),
         ),
         body: Center(
-          child: Builder( // Using Builder to provide a valid context for Navigator. ensures that the context is valid when the ElevatedButton is pressed. Descendant of MaterialApp.
+          child: Builder(
+            // Using Builder to provide a valid context for Navigator. ensures that the context is valid when the ElevatedButton is pressed. Descendant of MaterialApp.
             builder: (BuildContext context) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -27,7 +35,8 @@ Widget build(BuildContext context) {
                       // Using the context provided by Builder.
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => FileUploadScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => FileUploadScreen()),
                       );
                     },
                     child: const Text('I want to upload a file!'),
