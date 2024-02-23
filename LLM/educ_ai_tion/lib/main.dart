@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/file_upload_screen.dart';
+import 'screens/question_generator_screen.dart';
+import 'screens/settings_screen.dart';
 
 void main() {
   runApp(const MainApp());
