@@ -23,7 +23,7 @@ Widget build(BuildContext context) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Text('Welcome to ESS!'),
+                  const Text('Welcome to ESS'),
                   ElevatedButton(
                     onPressed: () {
                       // Using the context provided by Builder.
