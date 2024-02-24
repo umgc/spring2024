@@ -34,6 +34,24 @@ Widget build(BuildContext context) {
                     },
                     child: const Text('I want to upload a file!'),
                   ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SettingsScreen()),
+                      );
+                    },
+                    child: const Text('Go to Settings'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => QuestionGeneratorScreen()),
+                      );
+                    },
+                    child: const Text('Generate Questions'),
+                  )
                 ],
               );
             },
