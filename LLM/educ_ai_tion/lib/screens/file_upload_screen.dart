@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import '../services/file_service.dart';
 
 // File Upload Screen
 // 
@@ -7,64 +8,70 @@ import 'package:file_picker/file_picker.dart';
 // The uploaded files can then be processed or stored by the application, enabling teachers to work with their existing documents or templates.
 
 class FileUploadScreen extends StatefulWidget {
-  const FileUploadScreen({super.key});
-
   @override
   _FileUploadScreenState createState() => _FileUploadScreenState();
 }
 
 class _FileUploadScreenState extends State<FileUploadScreen> {
-  String? _fileName;
-  String? _filePath;
+  final FileStorageService _storageService = FileStorageService();
 
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles();
 
     if (result != null) {
-      setState(() {
-        _fileName = result.files.single.name;
-        _filePath = result.files.single.path;
-      });
-    } else {
-      // User canceled the picker
+      final name = result.files.single.name;
+      final path = result.files.single.path ?? '';
+
+      // Simulate file upload
+      await _storageService.uploadFile(name, path);
+
+      // Trigger UI update
+      setState(() {});
+
+      // Simulated upload feedback
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Uploaded $name')),
+      );
     }
   }
 
-  void _uploadFile() {
-    // Implement file upload functionality
-    // For now, we just display a snackbar
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Uploading $_fileName')),
-    );
-  }
-
-  @override
-Widget build(BuildContext context) {
+   @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Upload File'),
+        title: const Text('Upload Content'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: _pickFile,
-              child: const Text('Pick File'),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: _storageService.uploadedFiles.length,
+              itemBuilder: (context, index) {
+                final file = _storageService.uploadedFiles[index];
+                return ListTile(
+                  title: Text(file['name']!),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () {
+                      setState(() {
+                        _storageService.deleteFile(file['name']!);
+                      });
+                    },
+                  ),
+                );
+              },
             ),
-            const SizedBox(height: 20),
-            Text(_fileName ?? 'No file selected'),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _filePath != null ? _uploadFile : null,
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: _filePath != null ? Colors.blue : Colors.grey,
-              ),
-              child: const Text('Upload File'),
-            ),
-          ],
-        ),
+          ),
+          Align(
+          alignment: Alignment.bottomCenter,
+          child: ElevatedButton(
+            onPressed: _pickFile,
+            child: const Text('Pick a File'),
+            )
+          ),
+        ],
       ),
     );
   }
 }
+ 

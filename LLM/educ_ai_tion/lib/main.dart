@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'screens/file_upload_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'screens/question_generator_screen.dart';
+import 'screens/settings_screen.dart';
 
 void main() async {
   // Initialize Firebase
@@ -29,7 +31,7 @@ class MainApp extends StatelessWidget {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Text('Welcome to ESS!'),
+                  const Text('Welcome to ESS'),
                   ElevatedButton(
                     onPressed: () {
                       // Using the context provided by Builder.
@@ -40,6 +42,24 @@ class MainApp extends StatelessWidget {
                       );
                     },
                     child: const Text('I want to upload a file!'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => QuestionGeneratorScreen()),
+                      );
+                    },
+                    child: const Text('Generate Questions'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SettingsScreen()),
+                      );
+                    },
+                    child: const Text('Go to Settings'),
                   ),
                 ],
               );
