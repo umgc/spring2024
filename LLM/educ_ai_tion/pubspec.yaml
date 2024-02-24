@@ -10,6 +10,22 @@ dependencies:
   flutter:
     sdk: flutter
   file_picker: ^6.1.1
+  firebase_core: ^2.25.4
+  firebase_analytics: ^10.8.6
+  firebase_app_check: ^0.2.1+14
+  firebase_auth: ^4.17.5
+  cloud_firestore: ^4.15.5
+  cloud_functions: ^4.6.5
+  firebase_messaging: ^14.7.16
+  firebase_storage: ^11.6.6
+  firebase_crashlytics: ^3.4.15
+  firebase_dynamic_links: ^5.4.14
+  firebase_in_app_messaging: ^0.7.4+14
+  firebase_app_installations: ^0.2.4+14
+  firebase_ml_model_downloader: ^0.2.4+13
+  firebase_performance: ^0.9.3+14
+  firebase_database: ^10.4.6
+  firebase_remote_config: ^4.3.14
 
 dev_dependencies:
   flutter_test:
