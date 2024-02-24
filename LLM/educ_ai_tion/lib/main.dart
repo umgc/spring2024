@@ -38,20 +38,20 @@ Widget build(BuildContext context) {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SettingsScreen()),
+                        MaterialPageRoute(builder: (context) => QuestionGeneratorScreen()),
                       );
                     },
-                    child: const Text('Go to Settings'),
+                    child: const Text('Generate Questions'),
                   ),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => QuestionGeneratorScreen()),
+                        MaterialPageRoute(builder: (context) => SettingsScreen()),
                       );
                     },
-                    child: const Text('Generate Questions'),
-                  )
+                    child: const Text('Go to Settings'),
+                  ),
                 ],
               );
             },
