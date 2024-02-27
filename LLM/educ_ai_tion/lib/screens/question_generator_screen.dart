@@ -34,6 +34,7 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Question Generator'),
+        backgroundColor: Colors.blue[700],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -51,14 +52,14 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _generateQuestions,
-              child: const Text('Generate Questions'),
                style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue[700],
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-              )
+              ),
+              child: const Text('Generate Questions')
             ),
             const SizedBox(height: 20),
             Expanded(
