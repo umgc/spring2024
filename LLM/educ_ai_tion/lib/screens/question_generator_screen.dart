@@ -52,6 +52,13 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
             ElevatedButton(
               onPressed: _generateQuestions,
               child: const Text('Generate Questions'),
+               style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue[700],
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              )
             ),
             const SizedBox(height: 20),
             Expanded(
