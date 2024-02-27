@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/file_upload_screen.dart';
+import 'screens/home_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'screens/question_generator_screen.dart';
@@ -32,6 +33,15 @@ class MainApp extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   const Text('Welcome to ESS'),
+                    ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                      );
+                    },
+                    child: const Text('Teacher Portal'),
+                  ),
                   ElevatedButton(
                     onPressed: () {
                       // Using the context provided by Builder.
