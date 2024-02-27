@@ -22,7 +22,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Main Screen'),
+          title: const Text('Min Screen'),
         ),
         body: Center(
           child: Builder(
