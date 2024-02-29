@@ -40,6 +40,8 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Upload Content'),
+        backgroundColor: Colors.blue[700],
+
       ),
       body: Column(
         children: [
@@ -66,6 +68,13 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
           alignment: Alignment.bottomCenter,
           child: ElevatedButton(
             onPressed: _pickFile,
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue[700],
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
             child: const Text('Pick a File'),
             )
           ),
