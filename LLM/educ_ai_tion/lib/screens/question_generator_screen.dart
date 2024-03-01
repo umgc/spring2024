@@ -36,9 +36,11 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
         title: const Text('Question Generator'),
         backgroundColor: Colors.blue[700],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
+      body: Stack(
+        children: [
+          Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('Enter your question parameters:'),
@@ -65,10 +67,25 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
             Expanded(
               child: SingleChildScrollView(
                 child: Text(_generatedQuestions),
-              ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+           Positioned(
+            bottom: 20,
+            right: 20,
+            child: ElevatedButton(
+              onPressed: () {
+                // Add save response functionality here
+              },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Colors.blue, // Text color
+              ),
+              child: const Text('Save Response'),
+            ),
+          ),
+        ],
       ),
     );
   }
