@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../services/file_service.dart';
+import 'dart:io';
 
 // File Upload Screen
 // 
@@ -15,11 +16,13 @@ class FileUploadScreen extends StatefulWidget {
 class _FileUploadScreenState extends State<FileUploadScreen> {
   final FileStorageService _storageService = FileStorageService();
 
+List<String> _pickedFilePaths = [];
+
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles(allowMultiple: true);
-
+    
     if (result != null) {
-
+         _pickedFilePaths.clear();
       try{
       for (var file in result.files) {
         final name = file.name;
@@ -44,6 +47,27 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
     }
    }
   }
+  
+  Future<void> _uploadToAI() async {
+  
+     if (_pickedFilePaths.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("No files selected to upload to AI")),
+    );
+    return;
+  }
+
+  // Placeholder: Process each file for AI upload
+  for (String filePath in _pickedFilePaths) {
+    print("Uploading file to AI: $filePath");
+    // Here, replace print with your logic to read the file and upload its content to the AI service
+  }
+
+  // Feedback
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text("Uploaded ${_pickedFilePaths.length} files to AI")),
+  );
+}
 
    @override
   Widget build(BuildContext context) {
@@ -74,8 +98,8 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
               },
             ),
           ),
-          Align(
-          alignment: Alignment.bottomCenter,
+          Padding(
+          padding:const EdgeInsets.all(8.0),
           child: ElevatedButton(
             onPressed: _pickFile,
             style: ElevatedButton.styleFrom(
@@ -88,6 +112,20 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
             child: const Text('Pick a File'),
             )
           ),
+          Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ElevatedButton(
+            onPressed: _uploadToAI, // Make sure you've defined _uploadToAI method as shown earlier
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green, // Use a distinct color for differentiation
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
+            child: const Text('Upload to AI'),
+          ),
+        ),
         ],
       ),
     );

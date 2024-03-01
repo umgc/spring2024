@@ -24,10 +24,6 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
     setState(() {
       _generatedQuestions = response;
     });
-    
-    
-    
-
     // Future integration with OpenAI API will go here
     // You will use _controller.text as the input to the OpenAI API
   }
@@ -61,6 +57,8 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
       });
     }
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
