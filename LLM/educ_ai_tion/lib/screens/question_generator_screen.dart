@@ -24,9 +24,42 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
     setState(() {
       _generatedQuestions = response;
     });
+    
+    
+    
 
     // Future integration with OpenAI API will go here
     // You will use _controller.text as the input to the OpenAI API
+  }
+  void _clearResponse() async {
+    final bool confirmClear = await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Confirmation'),
+          content: const Text('Are you sure you want to clear the generated questions?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: const Text('Yes'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text('No'),
+            ),
+          ],
+        );
+      },
+    ) ?? false; 
+    if (confirmClear){
+      setState(() {
+        _generatedQuestions = "";
+      });
+    }
   }
 
   @override
@@ -85,6 +118,17 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
               child: const Text('Save Response'),
             ),
           ),
+          Positioned(
+            bottom: 20,
+            left: 20,
+            child: ElevatedButton(
+              onPressed: _clearResponse,
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Colors.red, // Text color
+              ),
+              child: const Text('Clear Response'),
+            ),
+          )
         ],
       ),
     );
