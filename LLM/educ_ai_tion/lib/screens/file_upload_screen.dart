@@ -16,23 +16,33 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
   final FileStorageService _storageService = FileStorageService();
 
   Future<void> _pickFile() async {
-    final result = await FilePicker.platform.pickFiles();
+    final result = await FilePicker.platform.pickFiles(allowMultiple: true);
 
     if (result != null) {
-      final name = result.files.single.name;
-      final path = result.files.single.path ?? '';
 
-      // Simulate file upload
-      await _storageService.uploadFile(name, path);
+      try{
+      for (var file in result.files) {
+        final name = file.name;
+        final path = file.path ?? '';
+
+        // Simulate file upload
+        await _storageService.uploadFile(name, path);
+      }
+      
 
       // Trigger UI update
       setState(() {});
 
       // Simulated upload feedback
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Uploaded $name')),
+        SnackBar(content: Text('Uploaded ${result.files.length} files')),
+      );
+    } catch (e){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error uploading files: $e')),
       );
     }
+   }
   }
 
    @override
@@ -40,6 +50,8 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Upload Content'),
+        backgroundColor: Colors.blue[700],
+
       ),
       body: Column(
         children: [
@@ -66,6 +78,13 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
           alignment: Alignment.bottomCenter,
           child: ElevatedButton(
             onPressed: _pickFile,
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue[700],
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
             child: const Text('Pick a File'),
             )
           ),
