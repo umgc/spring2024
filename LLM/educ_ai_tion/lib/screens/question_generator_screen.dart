@@ -27,6 +27,17 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
     // Future integration with OpenAI API will go here
     // You will use _controller.text as the input to the OpenAI API
   }
+
+  void _saveResponse() {
+  // Placeholder for your saving logic
+  // For example, saving the _generatedQuestions to a file or cloud storage
+
+  // Show a SnackBar upon saving
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text('Saved!')),
+  );
+}
+
   void _clearResponse() async {
     final bool confirmClear = await showDialog(
       context: context,
@@ -107,9 +118,7 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
             bottom: 20,
             right: 20,
             child: ElevatedButton(
-              onPressed: () {
-                // Add save response functionality here
-              },
+              onPressed: _saveResponse,
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white, backgroundColor: Colors.blue, // Text color
               ),
