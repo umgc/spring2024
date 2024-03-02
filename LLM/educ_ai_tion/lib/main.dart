@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'screens/question_generator_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/login_screen.dart';
 
 void main() async {
   // Initialize Firebase
@@ -21,6 +22,17 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      home: LoginScreen(),
+    );
+  }
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Main Screen'),
@@ -33,7 +45,7 @@ class MainApp extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   const Text('Welcome to ESS'),
-                    ElevatedButton(
+                  ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -57,7 +69,8 @@ class MainApp extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => QuestionGeneratorScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => QuestionGeneratorScreen()),
                       );
                     },
                     child: const Text('Generate Questions'),
@@ -66,7 +79,8 @@ class MainApp extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SettingsScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => SettingsScreen()),
                       );
                     },
                     child: const Text('Go to Settings'),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:educ_ai_tion/data/question_data.dart';
 
 class GeneratedQuestionsScreen extends StatelessWidget {
+  final QuestionData questionData = QuestionData();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,11 +55,8 @@ class GeneratedQuestionsScreen extends StatelessWidget {
       ),
     );
   }
-}
 
-Future<List<QueryDocumentSnapshot>> loadQuestions() async {
-  // Load questions from Firestore
-  QuerySnapshot querySnapshot =
-      await FirebaseFirestore.instance.collection('questions').get();
-  return querySnapshot.docs;
+  Future<List<QueryDocumentSnapshot>> loadQuestions() async {
+    return questionData.loadQuestions();
+  }
 }

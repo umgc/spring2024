@@ -23,4 +23,15 @@ class QuestionData {
       print('Error adding question: $e');
     }
   }
+
+  Future<List<QueryDocumentSnapshot>> loadQuestions() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('questions').get();
+      return querySnapshot.docs;
+    } catch (e) {
+      print('Error loading questions: $e');
+      throw e;
+    }
+  }
 }
