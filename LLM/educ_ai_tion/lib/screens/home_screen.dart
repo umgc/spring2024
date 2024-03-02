@@ -3,6 +3,8 @@ import 'package:educ_ai_tion/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'question_generator_screen.dart';
 import 'generated_questions_screen.dart';
+import 'file_upload_screen.dart';
+
 
 // Home Screen
 //
@@ -55,6 +57,25 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: Text('Generate Questions'),
             ),
+            SizedBox(height: 20),
+            ElevatedButton(
+                    onPressed: () {
+                      // Using the context provided by Builder.
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FileUploadScreen()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue[700],
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+                    child: const Text('I want to upload a file!'),
+                  ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {},
