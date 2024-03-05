@@ -204,17 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: Text('Gradebook'),
           ),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue[700],
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-            ),
-                        child: Text('Gradebook'),
-          ),
+        
           ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
