@@ -15,6 +15,12 @@ class QuestionGeneratorScreen extends StatefulWidget {
 class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
   final TextEditingController _controller = TextEditingController();
   String _generatedQuestions = "";
+  
+  String? _selectedSchoolLevel;
+  String? _selectedDifficulty;
+
+  final List<String> _schoolLevels = ['High-School', 'Middle School', 'Elementary School'];
+  final List<String> _difficultyLevels = ['Hard', 'Medium', 'Easy'];
 
   void _generateQuestions() async {
     // Placeholder for OpenAI API call
