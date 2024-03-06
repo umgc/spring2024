@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'file_upload_screen.dart';
 import 'question_generator_screen.dart';
 import 'settings_screen.dart';
-import 'home_screen.dart';
+import 'teachers_portal.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -22,7 +22,7 @@ class HomePage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
+                  MaterialPageRoute(builder: (context) => TeachersPortal()),
                 );
               },
               child: const Text('Teacher Portal'),

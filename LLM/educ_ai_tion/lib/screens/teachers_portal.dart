@@ -1,10 +1,7 @@
-// Home Screen
-import 'package:educ_ai_tion/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'question_generator_screen.dart';
 import 'generated_questions_screen.dart';
 import 'file_upload_screen.dart';
-
 
 // Home Screen
 //
@@ -12,24 +9,24 @@ import 'file_upload_screen.dart';
 //It provides a general overview of the app's functionality and navigational buttons to access different features,
 //such as the question generator, file upload, and settings.
 
-class HomeScreen extends StatefulWidget {
+class TeachersPortal extends StatefulWidget {
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _TeachersPortalState createState() => _TeachersPortalState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _TeachersPortalState extends State<TeachersPortal> {
   bool _notificationsEnabled = false; // Example setting
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Teacher\'s Portal'),
+        title: const Text('Teacher\'s Portal'),
         backgroundColor: Colors.blue[700],
       ),
       body: Container(
         color: Colors.lightBlue[100], // Changed background color to light blue
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
 
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -37,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             // Included image above the buttons
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -55,28 +52,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-              child: Text('Generate Questions'),
+              child: const Text('Generate Questions'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
-                    onPressed: () {
-                      // Using the context provided by Builder.
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => FileUploadScreen()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
+              onPressed: () {
+                // Using the context provided by Builder.
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FileUploadScreen()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue[700],
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-                    child: const Text('I want to upload a file!'),
-                  ),
-            SizedBox(height: 20),
+              child: const Text('I want to upload a file!'),
+            ),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
@@ -86,9 +82,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-              child: Text('Gradebook'),
+              child: const Text('Gradebook'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 // Add functionality to navigate to archives
@@ -101,9 +97,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-              child: Text('Archives'),
+              child: const Text('Archives'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 // Added functionality for the "Generated Questions" button
@@ -120,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-              child: Text('Generated Questions'),
+              child: const Text('Generated Questions'),
             ),
           ],
         ),

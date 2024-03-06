@@ -12,6 +12,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isSigningUp = false;
+  bool _showPassword = false;
 
   Future<void> _authenticate() async {
     try {
@@ -38,13 +39,13 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } catch (e) {
       print('Error authenticating: $e');
-      // Handle the error, e.g., display an error message to the user
+      // Handle the error
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Error Authenticating'),
-            content: Text(
+            title: const Text('Error Authenticating'),
+            content: const Text(
                 'An error occurred during authentication. Please try again.'),
             actions: [
               TextButton(
@@ -58,6 +59,63 @@ class _LoginScreenState extends State<LoginScreen> {
         },
       );
     }
+  }
+
+  Future<void> _resetPassword() async {
+    try {
+      final email = _emailController.text.trim();
+
+      if (email.isEmpty) {
+        // Show a warning if the email is not provided
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Email Required'),
+              content:
+                  const Text('Please enter your email to reset the password.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
+
+      await _auth.sendPasswordResetEmail(email: email);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Password Reset Email Sent'),
+            content: const Text('Check your email for a password reset link.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      print('Error sending password reset email: $e');
+    }
+  }
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _showPassword = !_showPassword;
+    });
   }
 
   void _toggleSignup() {
@@ -79,19 +137,37 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              decoration: const InputDecoration(labelText: 'Email'),
             ),
             TextField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _showPassword ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: _togglePasswordVisibility,
+                ),
+              ),
+              obscureText: !_showPassword,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: _resetPassword,
+                  child: const Text('Forgot Password?'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _authenticate,
               child: Text(_isSigningUp ? 'Sign Up' : 'Sign In'),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             ElevatedButton(
               onPressed: _toggleSignup,
               child:
