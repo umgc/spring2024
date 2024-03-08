@@ -16,8 +16,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    final apiKey = dotenv.env['API_KEY'];
     
     return MaterialApp(
       home: LoginScreen(),

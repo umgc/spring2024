@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import '../services/openai_services.dart'; // Ensure this import matches the location of your OpenAIService class
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+
 
 
 // Question Generator Screen
@@ -14,6 +18,7 @@ class QuestionGeneratorScreen extends StatefulWidget {
 
 class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
   final TextEditingController _controller = TextEditingController();
+  final OpenAIService _openAIService = OpenAIService();
   String _generatedQuestions = "";
   
   String? _selectedSchoolLevel;
@@ -23,25 +28,54 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
   final List<String> _difficultyLevels = ['Hard', 'Medium', 'Easy'];
 
   void _generateQuestions() async {
-    // Placeholder for OpenAI API call
-    // Simulate an API response
-    const response = "Here will be the generated questions based on the input parameters. This is a placeholder response.";
-
-    setState(() {
-      _generatedQuestions = response;
-    });
-    // Future integration with OpenAI API will go here
-    // You will use _controller.text as the input to the OpenAI API
+     if (_controller.text.isEmpty) {
+      // Optionally handle the case where the text field is empty
+      return;
+    }
+    try {
+      // Use the OpenAIService to generate questions based on the input text
+      final String response = await _openAIService.generateText(
+          _controller.text,
+          'gpt-3.5-turbo'); //biggest component for integrating with openaiservice
+      setState(() {
+        _generatedQuestions = response;
+      });
+    } catch (e) {
+      // Handle any errors here, perhaps by showing an alert dialog or a Snackbar
+      print(e); // For debugging purposes
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content:
+                Text('Failed to generate questions. Please try again later.')),
+      );
+    }
   }
 
-  void _saveResponse() {
-  // Placeholder for your saving logic
-  // For example, saving the _generatedQuestions to a file or cloud storage
+  void _saveResponse() async {
+  if (_generatedQuestions.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No questions to save')),
+      );
+      return;
+    }
 
-  // Show a SnackBar upon saving
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text('Saved!')),
-  );
+    try {
+      // Assuming you have a Firestore collection named 'generated_questions'
+      await FirebaseFirestore.instance.collection('generated_questions').add({
+        'questions': _generatedQuestions,
+        'created_at':
+            FieldValue.serverTimestamp(), // Automatically set the timestamp
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Questions saved successfully!')),
+      );
+    } catch (e) {
+      print(e); // For debugging purposes
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save questions.')),
+      );
+    }
 }
 
   void _clearResponse() async {

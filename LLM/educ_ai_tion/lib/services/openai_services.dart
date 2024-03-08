@@ -2,3 +2,41 @@
 // 
 // Handles all interactions with the OpenAI API. This service is responsible for sending requests to the API to generate questions, 
 // process natural language input, or perform any other tasks available through the OpenAI platform, encapsulating the API logic away from the UI.
+
+
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+class OpenAIService {
+  final String apiKey = dotenv.env['OPENAI_KEY']!; // Securely load API key
+
+  Future<String> generateText(String prompt,
+      [String modelId = 'gpt-3.5-turbo']) async {
+    var url = Uri.parse('https://api.openai.com/v1/chat/completions');
+    var response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $apiKey',
+      },
+      body: jsonEncode({
+        'model': modelId,
+        'messages': [
+          {'role': 'user', 'content': prompt},
+        ],
+        // No 'max_tokens' here; adjust parameters as needed for chat models
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      return data['choices'][0]['message']['content']
+          .trim(); // Adjusted to match the chat API response structure
+    } else {
+      print('Failed with status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      throw Exception('Failed to generate text from OpenAI');
+    }
+  }
+}
