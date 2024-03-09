@@ -1,58 +1,105 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:educ_ai_tion/screens/home_page.dart';
+import 'package:educ_ai_tion/screens/teacher_home_page.dart';
+import 'package:educ_ai_tion/screens/student_home_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  LoginScreenState createState() => LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _isSigningUp = false;
   bool _showPassword = false;
+  bool _isSigningUp = false;
 
   Future<void> _authenticate() async {
     try {
+      String email = _emailController.text.trim();
+      String password = _passwordController.text.trim();
       if (_isSigningUp) {
+        // Check if the user exists in the 'users' collection
+        bool userExists = await checkUserExists(email);
+
+        if (!userExists) {
+          // Show an error message and return if the user does not exist
+          _showErrorDialog(
+              'User not found. Please sign up with a valid email.');
+          return;
+        }
+        // Proceed with user creation
         await _auth.createUserWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
+          email: email,
+          password: password,
         );
-        // Additional signup logic if needed
+        // Update the 'signedIn' status to true after the first sign-up
+        await updateSignedInStatus(email, true);
         print('Sign up successful!');
       } else {
         await _auth.signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
+          email: email,
+          password: password,
         );
-        // Additional login logic if needed
+
         print('Sign in successful!');
       }
 
-      // Navigate to the home page upon successful authentication
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
+      // Check first login and determine user role
+      determineUserRole(email).then((role) async {
+        // Check first login and determine user role
+        bool isTeacher = await _isTeacher(email);
+
+        // Store the user role locally
+        await storeUserRoleLocally(isTeacher ? 'teacher' : 'student');
+
+        // Navigate to the home page upon successful authentication
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                isTeacher ? TeacherHomePage() : StudentHomePage(),
+          ),
+        );
+      }).catchError((error) {
+        print('Error determining user role: $error');
+        // Handle error if role determination fails
+      });
     } catch (e) {
+      // Handle other authentication errors
       print('Error authenticating: $e');
+      String errorMessage = 'An error occurred during authentication.';
+
+      if (e is FirebaseAuthException) {
+        // Handle specific authentication errors
+        switch (e.code) {
+          case 'user-not-found':
+            errorMessage = 'No user found with this email.';
+            break;
+          case 'wrong-password':
+            errorMessage = 'Invalid password.';
+            break;
+          case 'email-already-in-use':
+            errorMessage = 'User already signed up. Please sign in.';
+            break;
+        }
+      }
       // Handle the error
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Error Authenticating'),
-            content: const Text(
-                'An error occurred during authentication. Please try again.'),
+            content: Text(errorMessage),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -61,7 +108,74 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _resetPassword() async {
+  Future<bool> checkFirstLogin(String email) async {
+    try {
+      DocumentSnapshot snapshot =
+          await FirebaseFirestore.instance.collection('users').doc(email).get();
+
+      return !snapshot.exists;
+    } catch (e) {
+      // Handle any errors that may occur while fetching from Firestore
+      print('Error checking first login: $e');
+      return false;
+    }
+  }
+
+  Future<void> updateSignedInStatus(String email, bool signedIn) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .update({'signedIn': signedIn});
+    } catch (e) {
+      print('Error updating signedIn status: $e');
+    }
+  }
+
+  Future<String> handleFirstLoginAndRole(String email) async {
+    // Determine user role
+    String role = await determineUserRole(email);
+
+    // Store the user role locally
+    await storeUserRoleLocally(role);
+
+    return role;
+  }
+
+  Future<String> determineUserRole(String email) async {
+    try {
+      DocumentSnapshot snapshot =
+          await FirebaseFirestore.instance.collection('users').doc(email).get();
+
+      if (snapshot.exists) {
+        // The user document exists, return the 'role' field
+        return snapshot['role'] ?? 'student';
+      } else {
+        // Handle the case where the user document doesn't exist
+        print('User document does not exist');
+        return 'student';
+      }
+    } catch (e) {
+      // Handle any errors that may occur while fetching from Firestore
+      print('Error determining user role: $e');
+      return 'student';
+    }
+  }
+
+  Future<bool> _isTeacher(String email) async {
+    try {
+      String role = await determineUserRole(email);
+      print('user role is $role');
+      bool isTeacher = (role == 'teacher');
+      print('is teacher? $isTeacher');
+      return isTeacher;
+    } catch (error) {
+      print('Error determining user role: $error');
+      return false;
+    }
+  }
+
+  void _resetPassword() async {
     try {
       final email = _emailController.text.trim();
 
@@ -176,6 +290,51 @@ class _LoginScreenState extends State<LoginScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  // Function to store the user role locally
+  Future<void> storeUserRoleLocally(String role) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userRole', role);
+  }
+
+  // Function to retrieve the user role from local storage
+  Future<String?> getUserRoleLocally() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userRole');
+  }
+
+  Future<bool> checkUserExists(String email) async {
+    try {
+      DocumentSnapshot snapshot =
+          await FirebaseFirestore.instance.collection('users').doc(email).get();
+
+      return snapshot.exists;
+    } catch (e) {
+      // Handle any errors that may occur while fetching from Firestore
+      print('Error checking user existence: $e');
+      return false;
+    }
+  }
+
+  void _showErrorDialog(String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error Authenticating'),
+          content: Text(errorMessage),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

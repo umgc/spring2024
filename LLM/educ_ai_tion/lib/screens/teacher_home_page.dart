@@ -4,14 +4,14 @@ import 'question_generator_screen.dart';
 import 'settings_screen.dart';
 import 'teachers_portal.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+class TeacherHomePage extends StatelessWidget {
+  const TeacherHomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Page'),
+        title: const Text('Teacher Home Page'),
       ),
       body: Center(
         child: Column(

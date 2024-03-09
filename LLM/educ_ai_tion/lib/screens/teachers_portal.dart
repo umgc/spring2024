@@ -3,11 +3,7 @@ import 'question_generator_screen.dart';
 import 'generated_questions_screen.dart';
 import 'file_upload_screen.dart';
 
-// Home Screen
-//
-// This screen serves as the landing page of the application.
-//It provides a general overview of the app's functionality and navigational buttons to access different features,
-//such as the question generator, file upload, and settings.
+// Teacher's Portal
 
 class TeachersPortal extends StatefulWidget {
   @override
