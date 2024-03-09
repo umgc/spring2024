@@ -141,7 +141,7 @@ final List<String> _difficultyLevels = ['Hard', 'Medium', 'Easy'];
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Enter your question parameters:'),
+                const Text('Enter your question parameters, such as number of questions and topic:'),
                 TextField(
                   controller: _controller,
                   decoration: const InputDecoration(
