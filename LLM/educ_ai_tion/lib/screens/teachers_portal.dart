@@ -11,8 +11,6 @@ class TeachersPortal extends StatefulWidget {
 }
 
 class _TeachersPortalState extends State<TeachersPortal> {
-  bool _notificationsEnabled = false; // Example setting
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +35,7 @@ class _TeachersPortalState extends State<TeachersPortal> {
   Widget _buildTabletOrLargeScreenLayout() {
     return Container(
       color: Colors.lightBlue[100],
-      padding: EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -57,9 +55,9 @@ class _TeachersPortalState extends State<TeachersPortal> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  minimumSize: Size(200, 50),
+                  minimumSize: const Size(200, 50),
                 ),
-                child: Text('Upload File'),
+                child: const Text('Upload File'),
               ),
               ElevatedButton(
                 onPressed: () {},
@@ -69,9 +67,9 @@ class _TeachersPortalState extends State<TeachersPortal> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  minimumSize: Size(200, 50),
+                  minimumSize: const Size(200, 50),
                 ),
-                child: Text('Gradebook'),
+                child: const Text('Gradebook'),
               ),
               ElevatedButton(
                 onPressed: () {},
@@ -81,9 +79,9 @@ class _TeachersPortalState extends State<TeachersPortal> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  minimumSize: Size(200, 50),
+                  minimumSize: const Size(200, 50),
                 ),
-                child: Text('Archives'),
+                child: const Text('Archives'),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -99,9 +97,9 @@ class _TeachersPortalState extends State<TeachersPortal> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  minimumSize: Size(200, 50),
+                  minimumSize: const Size(200, 50),
                 ),
-                child: Text('Generated Questions'),
+                child: const Text('Generated Questions'),
               ),
             ],
           ),
@@ -129,9 +127,9 @@ class _TeachersPortalState extends State<TeachersPortal> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
-                      minimumSize: Size(300, 100),
+                      minimumSize: const Size(300, 100),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Generate Questions',
                       style: TextStyle(fontSize: 20),
                     ),
@@ -148,7 +146,7 @@ class _TeachersPortalState extends State<TeachersPortal> {
   Widget _buildMobileLayout() {
     return Container(
       color: Colors.lightBlue[100],
-      padding: EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -171,7 +169,7 @@ class _TeachersPortalState extends State<TeachersPortal> {
                 borderRadius: BorderRadius.circular(10.0),
               ),
             ),
-            child: Text('Generate Questions'),
+            child: const Text('Generate Questions'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -187,7 +185,7 @@ class _TeachersPortalState extends State<TeachersPortal> {
                 borderRadius: BorderRadius.circular(10.0),
               ),
             ),
-            child: Text('Upload File'),
+            child: const Text('Upload File'),
           ),
           ElevatedButton(
             onPressed: () {},
@@ -198,7 +196,7 @@ class _TeachersPortalState extends State<TeachersPortal> {
                 borderRadius: BorderRadius.circular(10.0),
               ),
             ),
-            child: Text('Gradebook'),
+            child: const Text('Gradebook'),
           ),
           ElevatedButton(
             onPressed: () {},
@@ -209,7 +207,7 @@ class _TeachersPortalState extends State<TeachersPortal> {
                 borderRadius: BorderRadius.circular(10.0),
               ),
             ),
-            child: Text('Archives'),
+            child: const Text('Archives'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -226,7 +224,7 @@ class _TeachersPortalState extends State<TeachersPortal> {
                 borderRadius: BorderRadius.circular(10.0),
               ),
             ),
-            child: Text('Generated Questions'),
+            child: const Text('Generated Questions'),
           ),
         ],
       ),
