@@ -16,6 +16,7 @@ class LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _showPassword = false;
   bool _isSigningUp = false;
+  bool _isPasswordValid = false;
 
   Future<void> _authenticate() async {
     try {
@@ -24,7 +25,11 @@ class LoginScreenState extends State<LoginScreen> {
       if (_isSigningUp) {
         // Check if the user exists in the 'users' collection
         bool userExists = await checkUserExists(email);
-
+        // Validate password length
+        if (password.length < 6) {
+          _showErrorDialog('Password must be at least 6 characters long.');
+          return;
+        }
         if (!userExists) {
           // Show an error message and return if the user does not exist
           _showErrorDialog(
@@ -255,6 +260,13 @@ class LoginScreenState extends State<LoginScreen> {
             ),
             TextField(
               controller: _passwordController,
+              onChanged: (value) {
+                // Triggered every time the password field changes
+                setState(() {
+                  // Check if the password is at least 6 characters long
+                  _isPasswordValid = value.length >= 6;
+                });
+              },
               decoration: InputDecoration(
                 labelText: 'Password',
                 suffixIcon: IconButton(
@@ -266,16 +278,20 @@ class LoginScreenState extends State<LoginScreen> {
               ),
               obscureText: !_showPassword,
             ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: _resetPassword,
-                  child: const Text('Forgot Password?'),
-                ),
-              ],
-            ),
+            if (_isSigningUp && _passwordController.text.length < 6)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Password must be at least 6 characters long.',
+                    style: TextStyle(color: Color.fromARGB(255, 63, 16, 151)),
+                  ),
+                  TextButton(
+                    onPressed: _resetPassword,
+                    child: const Text('Forgot Password?'),
+                  ),
+                ],
+              ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _authenticate,
