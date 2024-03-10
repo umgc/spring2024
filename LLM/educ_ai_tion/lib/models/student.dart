@@ -22,6 +22,13 @@ class Student {
     // todo: write implementation
   }
 
+  double getOverallGrade() {
+    // Average the grades in gradeList
+    if (gradeList.isEmpty) return 0.0;
+    return gradeList.map((grade) => grade.grade).reduce((a, b) => a + b) /
+        gradeList.length;
+  }
+
   String getFirstName() {
     return firstName;
   }

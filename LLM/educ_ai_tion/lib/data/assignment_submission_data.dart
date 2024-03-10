@@ -8,9 +8,11 @@ class AssignmentData {
           .collection('assignment_submissions')
           .doc(submission.assignmentId)
           .set({
-        'student': submission.student,
+        'studentFirstName': submission.student.firstName,
+        'studentLastName': submission.student.lastName,
+        'studentEmail': submission.student.email,
         'answers': submission.answers,
-        'submissionDateTime': submission.submissionDateTime,
+        'submissionDateTime': submission.submissionDateTime
       });
     } catch (e) {
       print('Error adding assignment submission: $e');

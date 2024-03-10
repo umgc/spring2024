@@ -11,28 +11,20 @@ class ClassData {
 
   ClassData(this.className, this.teacher, this.subject) : studentList = [];
 
-  void enroll(String className) {
-    // todo: write implementation
-  }
-
-  void dropClass(String className) {
-    // todo: write implementation
-  }
-
   String getClassName() {
-    return this.className;
+    return className;
   }
 
   List<Student> getStudentList() {
-    return this.studentList;
+    return studentList;
   }
 
   String getSubject() {
-    return this.subject;
+    return subject;
   }
 
   Teacher getTeacher() {
-    return this.teacher;
+    return teacher;
   }
 
   void setTeacher(Teacher newTeacher) {
