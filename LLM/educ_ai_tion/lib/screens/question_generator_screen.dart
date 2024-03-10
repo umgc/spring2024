@@ -20,6 +20,13 @@ class QuestionGeneratorScreen extends StatefulWidget {
 class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
   final TextEditingController _controller = TextEditingController();
   String _generatedQuestions = "";
+  
+  String? _selectedSchoolLevel;
+  String? _selectedDifficultyLevel;
+
+final List<String> _schoolLevels = ['High-School', 'Middle School', 'Elementary School'];
+final List<String> _difficultyLevels = ['Hard', 'Medium', 'Easy'];
+
   final OpenAIService _openAIService =
       OpenAIService(); // Instantiate your OpenAIService
 
@@ -29,10 +36,21 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
       // Optionally handle the case where the text field is empty
       return;
     }
+    if (_selectedSchoolLevel == null || _selectedDifficultyLevel == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Please select a school level and difficulty.')),
+      // Optionally handle the case where the dropdowns are not selected
+      );
+      return;
+    }
+    final String prompt = "Create questions for a $_selectedSchoolLevel student at the $_selectedDifficultyLevel level with these parameters: ${_controller.text}.";
+
+
     try {
       // Use the OpenAIService to generate questions based on the input text
       final String response = await _openAIService.generateText(
-          _controller.text,
+          prompt,
           'gpt-3.5-turbo'); //biggest component for integrating with openaiservice
       setState(() {
         _generatedQuestions = response;
@@ -41,7 +59,7 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
       // Handle any errors here, perhaps by showing an alert dialog or a Snackbar
       print(e); // For debugging purposes
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
             content:
                 Text('Failed to generate questions. Please try again later.')),
       );
@@ -124,15 +142,68 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Enter your question parameters:'),
+                const Text('Enter your question parameters, such as number of questions and topic:'),
                 TextField(
                   controller: _controller,
                   decoration: const InputDecoration(
                     hintText:
-                        'e.g., "Create three high-school level problems..."',
+                        'e.g., "Create three problems..."',
                   ),
                   maxLines: 5,
                 ),
+                const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: _selectedSchoolLevel,
+                    decoration: InputDecoration(
+                      labelText: 'Select School Level',
+                      contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    items: _schoolLevels.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedSchoolLevel = value;
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(width: 20), // Add spacing between dropdowns
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: _selectedDifficultyLevel,
+                    decoration: InputDecoration(
+                      labelText: 'Select Difficulty',
+                      contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    items: _difficultyLevels.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedDifficultyLevel = value;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                     onPressed: _generateQuestions,
