@@ -24,10 +24,21 @@ class QuestionData {
     }
   }
 
-  Future<List<QueryDocumentSnapshot>> loadQuestions() async {
+  Future<List<QueryDocumentSnapshot>> loadQuestions({
+    String? topic,
+    Difficulty? difficulty,
+  }) async {
     try {
-      QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('questions').get();
+      Query query = FirebaseFirestore.instance.collection('questions');
+      if (topic != null) {
+        query = query.where('topic', isEqualTo: topic);
+      }
+
+      if (difficulty != null) {
+        query = query.where('difficulty', isEqualTo: difficulty.name);
+      }
+
+      QuerySnapshot querySnapshot = await query.get();
       return querySnapshot.docs;
     } catch (e) {
       print('Error loading questions: $e');
