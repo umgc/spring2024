@@ -26,6 +26,7 @@ dependencies:
   firebase_performance: ^0.9.3+14
   firebase_database: ^10.4.6
   firebase_remote_config: ^4.3.14
+
   flutter_dotenv: ^5.1.0 
   http: ^0.13.3 # for making http requests to openai
   collection: ^1.17.2
@@ -42,3 +43,4 @@ flutter:
   assets: 
    - assets/images/
    - .env
+

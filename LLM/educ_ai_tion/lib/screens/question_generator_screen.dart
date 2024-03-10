@@ -20,6 +20,7 @@ class QuestionGeneratorScreen extends StatefulWidget {
 class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
   final TextEditingController _controller = TextEditingController();
   String _generatedQuestions = "";
+  
   String? _selectedSchoolLevel;
   String? _selectedDifficultyLevel;
 
