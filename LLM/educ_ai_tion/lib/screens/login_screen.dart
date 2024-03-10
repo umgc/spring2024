@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:educ_ai_tion/screens/teacher_home_page.dart';
 import 'package:educ_ai_tion/screens/student_home_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -57,9 +56,6 @@ class LoginScreenState extends State<LoginScreen> {
       determineUserRole(email).then((role) async {
         // Check first login and determine user role
         bool isTeacher = await _isTeacher(email);
-
-        // Store the user role locally
-        await storeUserRoleLocally(isTeacher ? 'teacher' : 'student');
 
         // Navigate to the home page upon successful authentication
         Navigator.pushReplacement(
@@ -140,9 +136,6 @@ class LoginScreenState extends State<LoginScreen> {
   Future<String> handleFirstLoginAndRole(String email) async {
     // Determine user role
     String role = await determineUserRole(email);
-
-    // Store the user role locally
-    await storeUserRoleLocally(role);
 
     return role;
   }
@@ -305,18 +298,6 @@ class LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
-  }
-
-  // Function to store the user role locally
-  Future<void> storeUserRoleLocally(String role) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('userRole', role);
-  }
-
-  // Function to retrieve the user role from local storage
-  Future<String?> getUserRoleLocally() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('userRole');
   }
 
   Future<bool> checkUserExists(String email) async {
