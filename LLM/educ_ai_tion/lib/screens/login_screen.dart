@@ -170,9 +170,7 @@ class LoginScreenState extends State<LoginScreen> {
   Future<bool> _isTeacher(String email) async {
     try {
       String role = await determineUserRole(email);
-      print('user role is $role');
       bool isTeacher = (role == 'teacher');
-      print('is teacher? $isTeacher');
       return isTeacher;
     } catch (error) {
       print('Error determining user role: $error');
