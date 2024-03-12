@@ -1,3 +1,4 @@
+import 'package:educ_ai_tion/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -17,8 +18,8 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: LoginScreen(),
+    return const MaterialApp(
+      home: WelcomeScreen(),
     );
   }
 }
