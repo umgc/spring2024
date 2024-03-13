@@ -1,9 +1,9 @@
+import 'package:educ_ai_tion/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart'; // for proper handling of API keys in .env file
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,9 +18,8 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-    return MaterialApp(
-      home: LoginScreen(),
+    return const MaterialApp(
+      home: WelcomeScreen(),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:educ_ai_tion/data/question_data.dart';
@@ -8,10 +9,13 @@ class GeneratedQuestionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Generated Questions'),
-        backgroundColor: Colors.blue[700],
-      ),
+      appBar: CustomAppBar(
+          title: 'Generated Questions',
+          onMenuPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        ),
+        drawer: const DrawerMenu(),
       body: FutureBuilder(
         future: loadQuestions(),
         builder:

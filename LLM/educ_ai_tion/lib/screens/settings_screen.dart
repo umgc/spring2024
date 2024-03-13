@@ -1,3 +1,4 @@
+import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 
 // Settings Screen
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 //notification settings, and other customizable aspects of the app to tailor the experience to their needs.
 
 class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
@@ -16,9 +18,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
+      appBar: CustomAppBar(
+          title: 'Settings',
+          onMenuPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        ),
+        drawer: const DrawerMenu(),
       body: ListView(
         children: <Widget>[
           SwitchListTile(

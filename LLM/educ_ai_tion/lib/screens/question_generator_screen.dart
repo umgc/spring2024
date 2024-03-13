@@ -1,17 +1,17 @@
+import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/openai_services.dart'; // Ensure this import matches the location of your OpenAIService class
 
-
 // Question Generator Screen
-// 
-// This screen allows teachers to generate test questions using the OpenAI API. 
-// Users can input topics or specific questions, and the app will use the OpenAI service to generate corresponding questions and answers. 
+//
+// This screen allows teachers to generate test questions using the OpenAI API.
+// Users can input topics or specific questions, and the app will use the OpenAI service to generate corresponding questions and answers.
 // Options for customizing the difficulty level and subject area are also provided.
-
 
 /// A screen that allows users to generate questions based on input text and save them to Firestore.
 class QuestionGeneratorScreen extends StatefulWidget {
+  const QuestionGeneratorScreen({super.key});
   @override
   _QuestionGeneratorScreenState createState() =>
       _QuestionGeneratorScreenState();
@@ -20,12 +20,16 @@ class QuestionGeneratorScreen extends StatefulWidget {
 class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
   final TextEditingController _controller = TextEditingController();
   String _generatedQuestions = "";
-  
+
   String? _selectedSchoolLevel;
   String? _selectedDifficultyLevel;
 
-final List<String> _schoolLevels = ['High-School', 'Middle School', 'Elementary School'];
-final List<String> _difficultyLevels = ['Hard', 'Medium', 'Easy'];
+  final List<String> _schoolLevels = [
+    'High-School',
+    'Middle School',
+    'Elementary School'
+  ];
+  final List<String> _difficultyLevels = ['Hard', 'Medium', 'Easy'];
 
   final OpenAIService _openAIService =
       OpenAIService(); // Instantiate your OpenAIService
@@ -40,17 +44,16 @@ final List<String> _difficultyLevels = ['Hard', 'Medium', 'Easy'];
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Please select a school level and difficulty.')),
-      // Optionally handle the case where the dropdowns are not selected
+        // Optionally handle the case where the dropdowns are not selected
       );
       return;
     }
-    final String prompt = "Create questions for a $_selectedSchoolLevel student at the $_selectedDifficultyLevel level with these parameters: ${_controller.text}.";
-
+    final String prompt =
+        "Create questions for a $_selectedSchoolLevel student at the $_selectedDifficultyLevel level with these parameters: ${_controller.text}.";
 
     try {
       // Use the OpenAIService to generate questions based on the input text
-      final String response = await _openAIService.generateText(
-          prompt,
+      final String response = await _openAIService.generateText(prompt,
           'gpt-3.5-turbo'); //biggest component for integrating with openaiservice
       setState(() {
         _generatedQuestions = response;
@@ -131,10 +134,13 @@ final List<String> _difficultyLevels = ['Hard', 'Medium', 'Easy'];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Question Generator'),
-        backgroundColor: Colors.blue[700],
-      ),
+      appBar: CustomAppBar(
+          title: 'Question Generator',
+          onMenuPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        ),
+        drawer: const DrawerMenu(),
       body: Stack(
         children: [
           Padding(
@@ -142,68 +148,70 @@ final List<String> _difficultyLevels = ['Hard', 'Medium', 'Easy'];
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Enter your question parameters, such as number of questions and topic:'),
+                const Text(
+                    'Enter your question parameters, such as number of questions and topic:'),
                 TextField(
                   controller: _controller,
                   decoration: const InputDecoration(
-                    hintText:
-                        'e.g., "Create three problems..."',
+                    hintText: 'e.g., "Create three problems..."',
                   ),
                   maxLines: 5,
                 ),
                 const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedSchoolLevel,
-                    decoration: InputDecoration(
-                      labelText: 'Select School Level',
-                      contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        value: _selectedSchoolLevel,
+                        decoration: InputDecoration(
+                          labelText: 'Select School Level',
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 10.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                        ),
+                        items: _schoolLevels.map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedSchoolLevel = value;
+                          });
+                        },
                       ),
                     ),
-                    items: _schoolLevels.map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedSchoolLevel = value;
-                      });
-                    },
-                  ),
-                ),
-                SizedBox(width: 20), // Add spacing between dropdowns
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedDifficultyLevel,
-                    decoration: InputDecoration(
-                      labelText: 'Select Difficulty',
-                      contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
+                    SizedBox(width: 20), // Add spacing between dropdowns
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        value: _selectedDifficultyLevel,
+                        decoration: InputDecoration(
+                          labelText: 'Select Difficulty',
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 10.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                        ),
+                        items: _difficultyLevels.map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedDifficultyLevel = value;
+                          });
+                        },
                       ),
                     ),
-                    items: _difficultyLevels.map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedDifficultyLevel = value;
-                      });
-                    },
-                  ),
+                  ],
                 ),
-              ],
-            ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                     onPressed: _generateQuestions,

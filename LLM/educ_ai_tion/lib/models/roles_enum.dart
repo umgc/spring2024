@@ -1,5 +1,5 @@
-enum Roles {
-  Student,
-  Teacher,
-  Admin,
+enum Roles_Enum {
+  student,
+  teacher,
+  admin,
 }
