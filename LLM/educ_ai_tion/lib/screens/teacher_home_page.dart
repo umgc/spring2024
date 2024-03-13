@@ -4,6 +4,7 @@ import 'file_upload_screen.dart';
 import 'question_generator_screen.dart';
 import 'settings_screen.dart';
 import 'teachers_portal.dart';
+import 'grade_screen.dart';
 
 class TeacherHomePage extends StatelessWidget {
   const TeacherHomePage({Key? key}) : super(key: key);

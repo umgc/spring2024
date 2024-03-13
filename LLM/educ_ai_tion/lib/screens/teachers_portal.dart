@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'question_generator_screen.dart';
 import 'generated_questions_screen.dart';
 import 'file_upload_screen.dart';
+import 'grade_screen.dart';
 
 // Teacher's Portal
 
 class TeachersPortal extends StatefulWidget {
-  const TeachersPortal({super.key});
+const TeachersPortal({super.key});
   @override
   _TeachersPortalState createState() => _TeachersPortalState();
 }
@@ -17,12 +18,12 @@ class _TeachersPortalState extends State<TeachersPortal> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-          title: 'Teacher \'s Portal',
+        title: 'Teacher \'s Portal',
           onMenuPressed: () {
             Scaffold.of(context).openDrawer();
           },
         ),
-        drawer: const DrawerMenu(),
+drawer: const DrawerMenu(),
       body: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth > 600) {
@@ -65,7 +66,10 @@ class _TeachersPortalState extends State<TeachersPortal> {
                 child: const Text('Upload File'),
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => GradingScreen()),
+                  );},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue[700],
                   foregroundColor: Colors.white,
