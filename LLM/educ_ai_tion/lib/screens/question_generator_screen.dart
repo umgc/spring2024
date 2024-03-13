@@ -1,3 +1,4 @@
+import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/openai_services.dart'; // Ensure this import matches the location of your OpenAIService class
@@ -10,6 +11,7 @@ import '../services/openai_services.dart'; // Ensure this import matches the loc
 
 /// A screen that allows users to generate questions based on input text and save them to Firestore.
 class QuestionGeneratorScreen extends StatefulWidget {
+  const QuestionGeneratorScreen({super.key});
   @override
   _QuestionGeneratorScreenState createState() =>
       _QuestionGeneratorScreenState();
@@ -132,10 +134,13 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Question Generator'),
-        backgroundColor: Colors.blue[700],
-      ),
+      appBar: CustomAppBar(
+          title: 'Question Generator',
+          onMenuPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        ),
+        drawer: const DrawerMenu(),
       body: Stack(
         children: [
           Padding(

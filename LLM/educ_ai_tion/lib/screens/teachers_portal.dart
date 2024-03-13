@@ -1,3 +1,4 @@
+import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'question_generator_screen.dart';
 import 'generated_questions_screen.dart';
@@ -6,6 +7,7 @@ import 'file_upload_screen.dart';
 // Teacher's Portal
 
 class TeachersPortal extends StatefulWidget {
+  const TeachersPortal({super.key});
   @override
   _TeachersPortalState createState() => _TeachersPortalState();
 }
@@ -14,10 +16,13 @@ class _TeachersPortalState extends State<TeachersPortal> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Teacher\'s Portal'),
-        backgroundColor: Colors.blue[700],
-      ),
+      appBar: CustomAppBar(
+          title: 'Teacher \'s Portal',
+          onMenuPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        ),
+        drawer: const DrawerMenu(),
       body: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth > 600) {
