@@ -4,8 +4,8 @@ import '../services/file_service.dart';
 import 'dart:io';
 
 // File Upload Screen
-// 
-// This screen facilitates the uploading of files by the user. It is designed to accept test templates or other educational materials. 
+//
+// This screen facilitates the uploading of files by the user. It is designed to accept test templates or other educational materials.
 // The uploaded files can then be processed or stored by the application, enabling teachers to work with their existing documents or templates.
 
 class FileUploadScreen extends StatefulWidget {
@@ -16,81 +16,105 @@ class FileUploadScreen extends StatefulWidget {
 class _FileUploadScreenState extends State<FileUploadScreen> {
   final FileStorageService _storageService = FileStorageService();
 
-List<String> _pickedFilePaths = [];
+  // Store file paths and selection status
+  Map<String, bool> _pickedFiles = {};
 
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles(allowMultiple: true);
-    
+
     if (result != null) {
-         _pickedFilePaths.clear();
-      try{
+      // Update _pickedFiles with new selections, maintaining previous selections
       for (var file in result.files) {
-        final name = file.name;
         final path = file.path ?? '';
-
-        // Simulate file upload
-        await _storageService.uploadFile(name, path);
+        if (!_pickedFiles.containsKey(path)) {
+          // Avoid overriding selections on re-picking
+          _pickedFiles[path] = false; // Add new file as not selected by default
+        }
       }
-      
 
-      // Trigger UI update
-      setState(() {});
+      setState(() {}); // Refresh UI to display newly picked files
+    }
+  }
 
-      // Simulated upload feedback
+  Future<void> _uploadToAI() async {
+    if (_pickedFiles.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Uploaded ${result.files.length} files')),
+        const SnackBar(content: Text("No files selected")),
       );
-    } catch (e){
+      return;
+    }
+
+    // Filter out files that are marked for upload and are .txt files
+    var filesToUpload = _pickedFiles.keys
+        .where((path) =>
+            _pickedFiles[path]! && path.toLowerCase().endsWith('.txt'))
+        .toList();
+
+    // Identify non-.txt files that were selected for upload
+    var nonTxtFilesSelected = _pickedFiles.keys
+        .where((path) =>
+            _pickedFiles[path]! && !path.toLowerCase().endsWith('.txt'))
+        .toList();
+
+    if (nonTxtFilesSelected.isNotEmpty) {
+      // Notify the user that non-.txt files cannot be uploaded
+      String nonTxtFileNames =
+          nonTxtFilesSelected.map((e) => e.split('/').last).join(', ');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error uploading files: $e')),
+        SnackBar(
+            content: Text(
+                "Only .txt files are allowed. These files were not uploaded: $nonTxtFileNames")),
       );
     }
-   }
-  }
-  
-  Future<void> _uploadToAI() async {
-  
-     if (_pickedFilePaths.isEmpty) {
+
+    if (filesToUpload.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("No files selected")),
+      );
+      return; // No valid .txt files to upload, return early
+    }
+
+    // Implement your upload logic here for filesToUpload
+    for (String filePath in filesToUpload) {
+      print("Uploading file to AI: $filePath");
+      // Replace this print statement with your actual file uploading logic
+    }
+
+    // Notify the user about successful upload
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("No files selected to upload to AI")),
+      SnackBar(
+          content: Text("Uploaded ${filesToUpload.length} .txt files to AI")),
     );
-    return;
   }
 
-  // Placeholder: Process each file for AI upload
-  for (String filePath in _pickedFilePaths) {
-    print("Uploading file to AI: $filePath");
-    // Here, replace print with your logic to read the file and upload its content to the AI service
-  }
-
-  // Feedback
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text("Uploaded ${_pickedFilePaths.length} files to AI")),
-  );
-}
-
-   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Upload Content'),
         backgroundColor: Colors.blue[700],
-
       ),
       body: Column(
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: _storageService.uploadedFiles.length,
+              itemCount: _pickedFiles.length,
               itemBuilder: (context, index) {
-                final file = _storageService.uploadedFiles[index];
-                return ListTile(
-                  title: Text(file['name']!),
-                  trailing: IconButton(
+                String filePath = _pickedFiles.keys.elementAt(index);
+                String fileName = filePath.split('/').last;
+                return CheckboxListTile(
+                  title: Text(fileName),
+                  value: _pickedFiles[filePath],
+                  onChanged: (bool? value) {
+                    setState(() {
+                      _pickedFiles[filePath] = value!;
+                    });
+                  },
+                  secondary: IconButton(
                     icon: Icon(Icons.delete),
                     onPressed: () {
                       setState(() {
-                        _storageService.deleteFile(file['name']!);
+                        _pickedFiles.remove(filePath);
                       });
                     },
                   ),
@@ -99,36 +123,46 @@ List<String> _pickedFilePaths = [];
             ),
           ),
           Padding(
-          padding:const EdgeInsets.all(8.0),
-          child: ElevatedButton(
-            onPressed: _pickFile,
-            style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue[700],
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: _pickFile,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue[700],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                child: const Text('Pick a File'),
+              )),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              onPressed:
+                  _uploadToAI, // Make sure you've defined _uploadToAI method as shown earlier
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    Colors.green, // Use a distinct color for differentiation
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-            child: const Text('Pick a File'),
-            )
+              child: const Text('Upload to AI'),
+            ),
           ),
           Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ElevatedButton(
-            onPressed: _uploadToAI, // Make sure you've defined _uploadToAI method as shown earlier
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green, // Use a distinct color for differentiation
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Upload restricted to .txt files',
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 16,
               ),
             ),
-            child: const Text('Upload to AI'),
           ),
-        ),
         ],
       ),
     );
   }
 }
- 
