@@ -1,3 +1,4 @@
+import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../services/file_service.dart';
@@ -9,6 +10,7 @@ import 'dart:io';
 // The uploaded files can then be processed or stored by the application, enabling teachers to work with their existing documents or templates.
 
 class FileUploadScreen extends StatefulWidget {
+  const FileUploadScreen({super.key});
   @override
   _FileUploadScreenState createState() => _FileUploadScreenState();
 }
@@ -91,10 +93,13 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Upload Content'),
-        backgroundColor: Colors.blue[700],
+      appBar: CustomAppBar(
+        title: 'Upload Content',
+        onMenuPressed: () {
+          Scaffold.of(context).openDrawer();
+        },
       ),
+      drawer: const DrawerMenu(),
       body: Column(
         children: [
           Expanded(
