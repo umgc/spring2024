@@ -45,4 +45,16 @@ class QuestionData {
       throw e;
     }
   }
+
+  
+  Future<List<QueryDocumentSnapshot>> loadAllQuestions() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('questions').orderBy('topic').get();
+      return querySnapshot.docs;
+    } catch (e) {
+      print('Error loading questions: $e');
+      throw e;
+    }
+  }
 }
