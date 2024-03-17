@@ -9,7 +9,6 @@ import 'package:educ_ai_tion/models/difficulty_enum.dart';
 import 'package:educ_ai_tion/data/question_data.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-
 class QuestionDisplayScreen extends StatefulWidget {
   const QuestionDisplayScreen({super.key});
 
@@ -39,6 +38,8 @@ class _QuestionDisplayScreenState extends State<QuestionDisplayScreen> {
       setState(() {
         _questions =
             questionDocs.map((doc) => Question.fromSnapshot(doc)).toList();
+        print(
+            'the question size in _loadAllQuestion function is ${_questions.length}');
       });
     } catch (e) {
       print('Error loading questions: $e');
@@ -69,62 +70,63 @@ class _QuestionDisplayScreenState extends State<QuestionDisplayScreen> {
     });
   }
 
-void _storeSelectedQuestions(BuildContext context) async {
-  try {
-    // Generate the text content based on the selected questions
-    String textContent = _selectedQuestions.map((question) {
-      return '''
+  void _storeSelectedQuestions(BuildContext context) async {
+    try {
+      // Generate the text content based on the selected questions
+      String textContent = _selectedQuestions.map((question) {
+        return '''
       Topic: ${question.topic}
       Question: ${question.question}
       Grade: ${question.grade}
       Difficulty: ${question.difficulty.name}
       Version: ${question.version}
       ''';
-    }).join('\n\n');
+      }).join('\n\n');
 
-    // Get the current date
-    String currentDate = DateTime.now().toString();
+      // Get the current date
+      String currentDate = DateTime.now().toString();
 
-    // Define the file name format
-    String fileName = '${_selectedGrade}_${_selectedDifficulty?.name ?? 'All'}_$currentDate.txt';
+      // Define the file name format
+      String fileName =
+          '${_selectedGrade}_${_selectedDifficulty?.name ?? 'All'}_$currentDate.txt';
 
-    if (kIsWeb) {
-      // For web, upload the text content directly to Firebase Storage
-      Reference storageRef = FirebaseStorage.instance.ref('selected_questions/$fileName');
-      await storageRef.putString(textContent);
-    } else {
-      // For mobile, create a temporary file and upload it
-      Uint8List data = utf8.encode(textContent);
-      Reference storageRef = FirebaseStorage.instance.ref('selected_questions/$fileName');
-      await storageRef.putData(data);
+      if (kIsWeb) {
+        // For web, upload the text content directly to Firebase Storage
+        Reference storageRef =
+            FirebaseStorage.instance.ref('selected_questions/$fileName');
+        await storageRef.putString(textContent);
+      } else {
+        // For mobile, create a temporary file and upload it
+        Uint8List data = utf8.encode(textContent);
+        Reference storageRef =
+            FirebaseStorage.instance.ref('selected_questions/$fileName');
+        await storageRef.putData(data);
+      }
+
+      // Show dialog to inform the user that the file is saved
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('File Saved'),
+            content: Text('File $fileName is created and saved.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+
+      print('Selected questions stored successfully.');
+    } catch (e) {
+      print('Error storing selected questions: $e');
     }
-
-    // Show dialog to inform the user that the file is saved
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('File Saved'),
-          content: Text('File $fileName is created and saved.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-
-    print('Selected questions stored successfully.');
-  } catch (e) {
-    print('Error storing selected questions: $e');
   }
-}
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -144,12 +146,12 @@ void _storeSelectedQuestions(BuildContext context) async {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               SizedBox(
-                width: MediaQuery.of(context).size.width * 0.3,
+                width: MediaQuery.of(context).size.width * 0.5,
                 child: DropdownButton<int>(
                   value: _selectedGrade,
                   hint: const Text('Select Grade'),
                   onChanged: (int? newValue) {
-                    if (newValue != null) { 
+                    if (newValue != null) {
                       setState(() {
                         _selectedGrade = newValue;
                       });
@@ -164,7 +166,7 @@ void _storeSelectedQuestions(BuildContext context) async {
                 ),
               ),
               SizedBox(
-                width: MediaQuery.of(context).size.width * 0.3,
+                width: MediaQuery.of(context).size.width * 0.5,
                 child: DropdownButton<Difficulty>(
                   value: _selectedDifficulty,
                   hint: const Text('Select Difficulty'),
@@ -183,7 +185,7 @@ void _storeSelectedQuestions(BuildContext context) async {
               ),
             ],
           ),
-          const SizedBox(height: 16), // Add spacing
+          const SizedBox(height: 10), // Add spacing
           Expanded(
             child: SingleChildScrollView(
               child: PaginatedDataTable(
@@ -202,7 +204,7 @@ void _storeSelectedQuestions(BuildContext context) async {
                   selectedQuestions: _selectedQuestions,
                   toggleQuestionSelection: _toggleQuestionSelection,
                 ),
-                // Add pagination, sorting, and filtering functionality 
+                // Add pagination, sorting, and filtering functionality
               ),
             ),
           ),

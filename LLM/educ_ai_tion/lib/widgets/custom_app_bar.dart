@@ -1,9 +1,9 @@
-
 import 'package:educ_ai_tion/screens/file_upload_screen.dart';
 import 'package:educ_ai_tion/screens/question_generator_screen.dart';
 import 'package:educ_ai_tion/screens/settings_screen.dart';
 import 'package:educ_ai_tion/screens/teacher_home_page.dart';
 import 'package:educ_ai_tion/screens/teachers_portal.dart';
+import 'package:educ_ai_tion/screens/question_display_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -51,11 +51,11 @@ class _CustomAppBarState extends State<CustomAppBar> {
         children: [
           const SizedBox(width: 8),
           Text(widget.title),
-          const SizedBox(width: 300),
-          Image.asset(
-            'images/logo.png',
-            height: 20,
-          ),
+          const SizedBox(width: 8),
+          // Image.asset(
+          //   'images/logo.png',
+          //   height: 20,
+          // ),
           const Spacer(),
           Text(
             userName,
@@ -89,7 +89,8 @@ class DrawerMenu extends StatelessWidget {
               Navigator.pop(context); // Close the drawer
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const TeacherHomePage()),
+                MaterialPageRoute(
+                    builder: (context) => const TeacherHomePage()),
               );
             },
           ),
@@ -102,13 +103,15 @@ class DrawerMenu extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => const TeachersPortal()),
               );
             },
-          ),ListTile(
+          ),
+          ListTile(
             title: const Text('Question Generator'),
             onTap: () {
               Navigator.pop(context); // Close the drawer
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const QuestionGeneratorScreen()),
+                MaterialPageRoute(
+                    builder: (context) => const QuestionGeneratorScreen()),
               );
             },
           ),
@@ -118,16 +121,19 @@ class DrawerMenu extends StatelessWidget {
               Navigator.pop(context); // Close the drawer
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const FileUploadScreen()),
+                MaterialPageRoute(
+                    builder: (context) => const FileUploadScreen()),
               );
             },
-          ),ListTile(
-            title: const Text('Generate Questions'),
+          ),
+          ListTile(
+            title: const Text('Display Questions'),
             onTap: () {
               Navigator.pop(context); // Close the drawer
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const QuestionGeneratorScreen()),
+                MaterialPageRoute(
+                    builder: (context) => const QuestionDisplayScreen()),
               );
             },
           ),
