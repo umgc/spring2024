@@ -21,7 +21,7 @@ class OpenAIService {
   ///
   /// Throws an [Exception] if the text generation fails.
   Future<String> generateText(String prompt,
-      [String modelId = 'gpt-3.5-turbo']) async {
+      [String modelId = 'gpt-4']) async {
     var url = Uri.parse('https://api.openai.com/v1/chat/completions');
     var response = await http.post(
       url,
