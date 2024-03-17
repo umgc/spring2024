@@ -80,13 +80,16 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
     for (String filePath in filesToUpload) {
       print("Uploading file to AI: $filePath");
       // TODO add in file upload to storage and UI logic here
-      // Once that is in place, add logic to clear the list once files are successfully uploaded
     }
+
+    setState(() {
+      _pickedFiles.clear();
+    });
 
     // Notify the user about successful upload
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-          content: Text("Uploaded ${filesToUpload.length} .txt files to AI")),
+          content: Text("Uploaded ${filesToUpload.length} files to Storage")),
     );
   }
 
@@ -154,7 +157,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-              child: const Text('Upload to AI'),
+              child: const Text('Upload to Storage'),
             ),
           ),
           Padding(
