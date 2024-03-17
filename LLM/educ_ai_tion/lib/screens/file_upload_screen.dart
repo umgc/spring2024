@@ -78,10 +78,12 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
 
     // Implement your upload logic here for filesToUpload
     for (String filePath in filesToUpload) {
+      String fileName = filePath.split('/').last;
+      await _storageService.uploadFile(fileName, filePath);
       print("Uploading file to AI: $filePath");
-      // TODO add in file upload to storage and UI logic here
     }
 
+    // clear uploaded file list
     setState(() {
       _pickedFiles.clear();
     });
