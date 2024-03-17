@@ -77,7 +77,8 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
     // Implement your upload logic here for filesToUpload
     for (String filePath in filesToUpload) {
       print("Uploading file to AI: $filePath");
-      // Replace this print statement with your actual file uploading logic
+      // TODO add in file upload to storage and UI logic here
+      // Once that is in place, add logic to clear the list once files are successfully uploaded
     }
 
     // Notify the user about successful upload
