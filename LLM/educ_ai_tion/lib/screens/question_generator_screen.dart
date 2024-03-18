@@ -24,11 +24,7 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
   String? _selectedSchoolLevel;
   String? _selectedDifficultyLevel;
 
-  final List<String> _schoolLevels = [
-    'High-School',
-    'Middle School',
-    'Elementary School'
-  ];
+  final List<String> _schoolLevels = ['High-School', 'Middle School','Elementary School'];
   final List<String> _difficultyLevels = ['Hard', 'Medium', 'Easy'];
 
   final OpenAIService _openAIService =
@@ -54,7 +50,7 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
     try {
       // Use the OpenAIService to generate questions based on the input text
       final String response = await _openAIService.generateText(prompt,
-          'gpt-3.5-turbo'); //biggest component for integrating with openaiservice
+          'gpt-4'); //biggest component for integrating with openaiservice
       setState(() {
         _generatedQuestions = response;
       });
