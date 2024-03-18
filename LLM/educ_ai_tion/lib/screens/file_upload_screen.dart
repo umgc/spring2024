@@ -7,6 +7,8 @@ import 'dart:io';
 // File Upload Screen
 //
 // This screen facilitates the uploading of files by the user. It is designed to accept test templates or other educational materials.
+//
+// This screen facilitates the uploading of files by the user. It is designed to accept test templates or other educational materials.
 // The uploaded files can then be processed or stored by the application, enabling teachers to work with their existing documents or templates.
 
 class FileUploadScreen extends StatefulWidget {
@@ -25,76 +27,58 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
     final result = await FilePicker.platform.pickFiles(allowMultiple: true);
 
     if (result != null) {
-      // Update _pickedFiles with new selections, maintaining previous selections
-      for (var file in result.files) {
-        final path = file.path ?? '';
-        if (!_pickedFiles.containsKey(path)) {
-          // Avoid overriding selections on re-picking
-          _pickedFiles[path] = false; // Add new file as not selected by default
+      _pickedFilePaths.clear();
+      try {
+        for (var file in result.files) {
+          final name = file.name;
+          //final path = file.path ?? ''; causes an error
+          final bytes = file.bytes;
+          if (bytes != null) {
+            await _storageService.uploadFile(name, bytes);
+          }
         }
-      }
 
-      setState(() {}); // Refresh UI to display newly picked files
+        // Simulate file upload
+        //await _storageService.uploadFile(name, path);
+        // }
+
+        // Trigger UI update
+        setState(() {});
+
+        // Simulated upload feedback
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Uploaded ${result.files.length} files')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error uploading files: $e')),
+        );
+      }
     }
   }
 
   Future<void> _uploadToAI() async {
-    if (_pickedFiles.isEmpty) {
+    if (_pickedFilePaths.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("No files selected")),
+        const SnackBar(content: Text("No files selected to upload to AI")),
       );
       return;
     }
 
-    // Filter out files that are marked for upload and are .txt files
-    var filesToUpload = _pickedFiles.keys
-        .where((path) =>
-            _pickedFiles[path]! && path.toLowerCase().endsWith('.txt'))
-        .toList();
-
-    // Identify non-.txt files that were selected for upload
-    var nonTxtFilesSelected = _pickedFiles.keys
-        .where((path) =>
-            _pickedFiles[path]! && !path.toLowerCase().endsWith('.txt'))
-        .toList();
-
-    if (nonTxtFilesSelected.isNotEmpty) {
-      // Notify the user that non-.txt files cannot be uploaded
-      String nonTxtFileNames =
-          nonTxtFilesSelected.map((e) => e.split('/').last).join(', ');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-                "Only .txt files are allowed. These files were not uploaded: $nonTxtFileNames")),
-      );
-    }
-
-    if (filesToUpload.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("No files selected")),
-      );
-      return; // No valid .txt files to upload, return early
-    }
-
-    // Implement your upload logic here for filesToUpload
-    for (String filePath in filesToUpload) {
-      String fileName = filePath.split('/').last;
-      await _storageService.uploadFile(fileName, filePath);
+    // Placeholder: Process each file for AI upload
+    for (String filePath in _pickedFilePaths) {
       print("Uploading file to AI: $filePath");
+      // Here, replace print with your logic to read the file and upload its content to the AI service
     }
 
-    // clear uploaded file list
-    setState(() {
-      _pickedFiles.clear();
-    });
-
-    // Notify the user about successful upload
+    // Feedback
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-          content: Text("Uploaded ${filesToUpload.length} files to Storage")),
+          content: Text("Uploaded ${_pickedFilePaths.length} files to AI")),
     );
   }
 
+  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,7 +93,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: _pickedFiles.length,
+              itemCount: _storageService.uploadedFiles.length,
               itemBuilder: (context, index) {
                 String filePath = _pickedFiles.keys.elementAt(index);
                 String fileName = filePath.split('/').last;
@@ -159,17 +143,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-              child: const Text('Upload to Storage'),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              'Upload restricted to .txt files',
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 16,
-              ),
+              child: const Text('Upload to AI'),
             ),
           ),
         ],
