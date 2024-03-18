@@ -40,8 +40,8 @@ class LoginScreenState extends State<LoginScreen> {
           email: email,
           password: password,
         );
-        // Update the 'signedIn' status to true after the first sign-up
-        await updateSignedInStatus(email, true);
+        // Update the 'signedUp' status to true after the first sign-up
+        await updateSignedUpStatus(email, true);
         print('Sign up successful!');
       } else {
         await _auth.signInWithEmailAndPassword(
@@ -122,14 +122,14 @@ class LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> updateSignedInStatus(String email, bool signedIn) async {
+  Future<void> updateSignedUpStatus(String email, bool signedUp) async {
     try {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(email)
-          .update({'signedIn': signedIn});
+          .update({'signedUp': signedUp});
     } catch (e) {
-      print('Error updating signedIn status: $e');
+      print('Error updating signedUp status: $e');
     }
   }
 
@@ -236,6 +236,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("Building LoginScreen");
     return Scaffold(
       appBar: AppBar(
         title: Text(_isSigningUp ? 'Sign Up' : 'Login'),
@@ -302,9 +303,9 @@ class LoginScreenState extends State<LoginScreen> {
 
   Future<bool> checkUserExists(String email) async {
     try {
+      print("the email is '$email'");
       DocumentSnapshot snapshot =
           await FirebaseFirestore.instance.collection('users').doc(email).get();
-
       return snapshot.exists;
     } catch (e) {
       // Handle any errors that may occur while fetching from Firestore
