@@ -1,4 +1,5 @@
 import 'package:educ_ai_tion/screens/question_display_screen.dart';
+import 'package:educ_ai_tion/screens/question_file_list.dart';
 import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'file_upload_screen.dart';
@@ -65,6 +66,17 @@ class TeacherHomePage extends StatelessWidget {
                 );
               },
               child: const Text('Display Questions'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => QuestionFileList(),
+                  ),
+                );
+              },
+              child: const Text('Saved Questions List'),
             ),
             ElevatedButton(
               onPressed: () {

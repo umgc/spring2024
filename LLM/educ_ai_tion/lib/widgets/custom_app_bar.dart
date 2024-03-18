@@ -1,4 +1,5 @@
 import 'package:educ_ai_tion/screens/file_upload_screen.dart';
+import 'package:educ_ai_tion/screens/question_file_list.dart';
 import 'package:educ_ai_tion/screens/question_generator_screen.dart';
 import 'package:educ_ai_tion/screens/settings_screen.dart';
 import 'package:educ_ai_tion/screens/teacher_home_page.dart';
@@ -134,6 +135,17 @@ class DrawerMenu extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                     builder: (context) => const QuestionDisplayScreen()),
+              );
+            },
+          ),
+          ListTile(
+            title: const Text('Saved Questions List'),
+            onTap: () {
+              Navigator.pop(context); // Close the drawer
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const QuestionFileList()),
               );
             },
           ),
