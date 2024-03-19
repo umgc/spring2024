@@ -27,18 +27,32 @@ class Question {
       required this.className,
       required this.version});
 
-      factory Question.fromSnapshot(QueryDocumentSnapshot snapshot) {
+  factory Question.fromSnapshot(QueryDocumentSnapshot snapshot) {
     final data = snapshot.data() as Map<String, dynamic>;
     return Question(
       id: snapshot.id,
       className: data['className'] ?? '',
       topic: data['topic'] ?? '',
-     // difficulty: DifficultyEnumExtension.difficultyToString(data['difficulty'] ?? ''),
-      difficulty: (data['difficulty'] as String).parseDifficulty(), // Parse the difficulty
+      // difficulty: DifficultyEnumExtension.difficultyToString(data['difficulty'] ?? ''),
+      difficulty: (data['difficulty'] as String)
+          .parseDifficulty(), // Parse the difficulty
       question: data['question'] ?? '',
       date: data['date'].toDate() ?? '',
       grade: data['grade'] ?? '',
       version: data['version'] ?? '',
     );
-  }    
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'topic': topic,
+      'difficulty': difficulty.toString(), // Convert difficulty enum to string
+      'question': question,
+      'date': date,
+      'grade': grade,
+      'version': version,
+      'className': className,
+    };
+  }
 }
