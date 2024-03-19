@@ -1,0 +1,21 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow read and write access to the "questions" collection
+    match /questions/{document=**} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow read access to the "users" collection
+    match /users/{document=**} {
+      allow read: if request.auth != null;
+    }
+
+    // Default to no read or write access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+

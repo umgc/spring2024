@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "408851813099",
+    "project_id": "llmspring2024-1cef2",
+    "storage_bucket": "llmspring2024-1cef2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:408851813099:android:8d82452ed9f7caa38b24ae",
+        "android_client_info": {
+          "package_name": "com.example.educ_ai_tion"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkz5mr57wGQeW7YNy6PbgcBCDSjt5K5zA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
