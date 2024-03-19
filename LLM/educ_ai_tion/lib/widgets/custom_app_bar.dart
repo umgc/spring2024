@@ -5,6 +5,7 @@ import 'package:educ_ai_tion/screens/settings_screen.dart';
 import 'package:educ_ai_tion/screens/teacher_home_page.dart';
 import 'package:educ_ai_tion/screens/teachers_portal.dart';
 import 'package:educ_ai_tion/screens/question_display_screen.dart';
+import 'package:educ_ai_tion/screens/welcome_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -157,6 +158,15 @@ class DrawerMenu extends StatelessWidget {
                 context,
                 MaterialPageRoute(builder: (context) => const SettingsScreen()),
               );
+            },
+          ),
+          ListTile(
+            title: const Text('Logout'),
+            onTap: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.pop(context);
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => WelcomeScreen()));
             },
           ),
         ],
