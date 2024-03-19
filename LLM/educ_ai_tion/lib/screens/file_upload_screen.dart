@@ -5,29 +5,25 @@ import '../services/file_service.dart';
 import 'dart:io';
 
 // File Upload Screen
-//
-// This screen facilitates the uploading of files by the user. It is designed to accept test templates or other educational materials.
-//
+
 // This screen facilitates the uploading of files by the user. It is designed to accept test templates or other educational materials.
 // The uploaded files can then be processed or stored by the application, enabling teachers to work with their existing documents or templates.
 
 class FileUploadScreen extends StatefulWidget {
-  const FileUploadScreen({super.key});
+  const FileUploadScreen({Key? key}) : super(key: key);
   @override
   _FileUploadScreenState createState() => _FileUploadScreenState();
 }
 
 class _FileUploadScreenState extends State<FileUploadScreen> {
   final FileStorageService _storageService = FileStorageService();
-
-  // Store file paths and selection status
   Map<String, bool> _pickedFiles = {};
 
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles(allowMultiple: true);
 
     if (result != null) {
-      _pickedFilePaths.clear();
+      _pickedFiles.clear();
       try {
         for (var file in result.files) {
           final name = file.name;
@@ -37,10 +33,6 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
             await _storageService.uploadFile(name, bytes);
           }
         }
-
-        // Simulate file upload
-        //await _storageService.uploadFile(name, path);
-        // }
 
         // Trigger UI update
         setState(() {});
@@ -58,7 +50,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
   }
 
   Future<void> _uploadToAI() async {
-    if (_pickedFilePaths.isEmpty) {
+    if (_pickedFiles.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("No files selected to upload to AI")),
       );
@@ -66,19 +58,19 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
     }
 
     // Placeholder: Process each file for AI upload
-    for (String filePath in _pickedFilePaths) {
+    for (String filePath
+        in _pickedFiles.keys.where((key) => _pickedFiles[key]!)) {
       print("Uploading file to AI: $filePath");
       // Here, replace print with your logic to read the file and upload its content to the AI service
+      //Rene's note, does this ^ still need to be done?
     }
 
     // Feedback
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-          content: Text("Uploaded ${_pickedFilePaths.length} files to AI")),
+      SnackBar(content: Text("Uploaded ${_pickedFiles.length} files to AI")),
     );
   }
 
-  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,7 +85,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: _storageService.uploadedFiles.length,
+              itemCount: _pickedFiles.length,
               itemBuilder: (context, index) {
                 String filePath = _pickedFiles.keys.elementAt(index);
                 String fileName = filePath.split('/').last;

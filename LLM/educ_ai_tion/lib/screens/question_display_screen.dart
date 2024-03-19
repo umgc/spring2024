@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:educ_ai_tion/models/question.dart';
 import 'package:educ_ai_tion/models/difficulty_enum.dart';
-import 'package:educ_ai_tion/data/question_data.dart';
+import 'package:educ_ai_tion/services/question_data.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class QuestionDisplayScreen extends StatefulWidget {
