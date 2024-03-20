@@ -1,4 +1,4 @@
-import 'package:educ_ai_tion/models/difficulty_enum.dart'; 
+import 'package:educ_ai_tion/models/difficulty_enum.dart';
 
 extension DifficultyEnumExtension on String {
   Difficulty parseDifficulty() {
@@ -6,23 +6,22 @@ extension DifficultyEnumExtension on String {
       case 'easy':
         return Difficulty.easy;
       case 'intermediate':
-        return Difficulty.intermediate;
+        return Difficulty.medium;
       case 'advanced':
-        return Difficulty.advanced;
+        return Difficulty.hard;
       default:
         return Difficulty.easy;
     }
   }
 
-    static String difficultyToString(Difficulty difficulty) {
+  static String difficultyToString(Difficulty difficulty) {
     switch (difficulty) {
       case Difficulty.easy:
         return 'easy';
-      case Difficulty.intermediate:
-        return 'intermediate';
-      case Difficulty.advanced:
-        return 'advanced';
-      
+      case Difficulty.medium:
+        return 'medium';
+      case Difficulty.hard:
+        return 'hard';
     }
   }
 }

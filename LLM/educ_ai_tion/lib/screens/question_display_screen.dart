@@ -79,7 +79,6 @@ class _QuestionDisplayScreenState extends State<QuestionDisplayScreen> {
       Question: ${question.question}
       Grade: ${question.grade}
       Difficulty: ${question.difficulty.name}
-      Version: ${question.version}
       ''';
       }).join('\n\n');
 
@@ -197,7 +196,6 @@ class _QuestionDisplayScreenState extends State<QuestionDisplayScreen> {
                   DataColumn(label: Text('Question')),
                   DataColumn(label: Text('Grade')),
                   DataColumn(label: Text('Difficulty')),
-                  DataColumn(label: Text('Version')),
                 ],
                 source: _QuestionDataSource(
                   questions: _filterQuestions(),
@@ -249,7 +247,6 @@ class _QuestionDataSource extends DataTableSource {
         DataCell(Text(question.question)),
         DataCell(Text(question.grade.toString())),
         DataCell(Text(question.difficulty.name)),
-        DataCell(Text(question.version.toString())),
       ],
     );
   }

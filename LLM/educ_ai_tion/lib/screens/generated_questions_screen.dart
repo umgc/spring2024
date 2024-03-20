@@ -2,7 +2,6 @@ import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:educ_ai_tion/services/question_data.dart';
-import 'package:educ_ai_tion/services/question_data.dart';
 
 class GeneratedQuestionsScreen extends StatelessWidget {
   final QuestionData questionData = QuestionData();
