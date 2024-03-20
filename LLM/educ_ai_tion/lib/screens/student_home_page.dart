@@ -1,3 +1,4 @@
+import 'package:educ_ai_tion/widgets/student_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'file_upload_screen.dart';
 import 'question_generator_screen.dart';
@@ -11,9 +12,13 @@ class StudentHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Student Home Page'),
+      appBar: StudentAppBar(
+        title: 'Student Home Page',
+        onMenuPressed: () {
+          Scaffold.of(context).openDrawer();
+        },
       ),
+      drawer: const DrawerMenu(),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
