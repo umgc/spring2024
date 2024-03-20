@@ -1,11 +1,10 @@
-import 'dart:io';
-import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 
 class QuestionFileList extends StatefulWidget {
-  const QuestionFileList({super.key});
+  const QuestionFileList({Key? key});
 
   @override
   _FileListViewState createState() => _FileListViewState();
@@ -36,20 +35,14 @@ class _FileListViewState extends State<QuestionFileList> {
 
   Future<void> downloadFile(String fileName) async {
     try {
-      Directory directory = await getApplicationDocumentsDirectory();
-      String filePath = '${(await directory).path}/$fileName';
+      String downloadUrl = await storageRef.child(fileName).getDownloadURL();
 
-      if (!await directory.exists()) {
-        await directory.create(recursive: true);
+      // Open the download URL in a new browser tab
+      if (await canLaunch(downloadUrl)) {
+        await launch(downloadUrl);
+      } else {
+        throw 'Could not launch $downloadUrl';
       }
-
-      File downloadFile = File(filePath);
-      await storageRef.child(fileName).writeToFile(downloadFile);
-      print('File downloaded successfully');
-
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('File downloaded to: $filePath'),
-      ));
     } catch (e) {
       print('Error downloading file: $e');
     }
@@ -71,24 +64,13 @@ class _FileListViewState extends State<QuestionFileList> {
           itemCount: fileNames.length,
           itemBuilder: (context, index) {
             String fileName = fileNames[index];
-            bool isFileDownloaded = File(
-              '${(getApplicationDocumentsDirectory().then((dir) => dir.path))}/$fileName',
-            ).existsSync();
 
             return ListTile(
               title: Text(fileName),
-              trailing: isFileDownloaded
-                  ? TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Downloaded',
-                        style: TextStyle(color: Colors.green),
-                      ),
-                    )
-                  : TextButton(
-                      onPressed: () => downloadFile(fileName),
-                      child: Text('Download'),
-                    ),
+              trailing: TextButton(
+                onPressed: () => downloadFile(fileName),
+                child: Text('Download'),
+              ),
             );
           },
         ),
