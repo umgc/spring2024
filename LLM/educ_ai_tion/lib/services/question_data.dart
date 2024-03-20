@@ -6,19 +6,14 @@ import 'package:educ_ai_tion/models/question.dart';
 class QuestionData {
   Future<void> addQuestion(Question question) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('questions')
-          .doc(question.id)
-          .set({
-        'className': question.className,
+      await FirebaseFirestore.instance.collection('questions').add({
+        'subject': question.subject,
         'topic': question.topic,
         'difficulty': question.difficulty.name,
-        'id': question.id,
         'question': question.question,
         'date': question.date,
         'grade': question.grade,
-        'version': question.version,
-      });
+      }).then((value) => print('Question added with ID: ${value.id}'));
     } catch (e) {
       print('Error adding question: $e');
     }
@@ -46,11 +41,12 @@ class QuestionData {
     }
   }
 
-  
   Future<List<QueryDocumentSnapshot>> loadAllQuestions() async {
     try {
-      QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('questions').orderBy('topic').get();
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('questions')
+          .orderBy('topic')
+          .get();
       return querySnapshot.docs;
     } catch (e) {
       print('Error loading questions: $e');

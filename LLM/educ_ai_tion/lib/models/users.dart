@@ -2,7 +2,6 @@
 //
 // Represents the data model for the users that is stored on Firestore.
 import 'package:flutter/material.dart';
-import 'difficulty_enum.dart';
 import 'roles_enum.dart';
 
 class Users {
