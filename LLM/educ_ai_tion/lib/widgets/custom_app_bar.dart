@@ -71,12 +71,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
 }
 
 class DrawerMenu extends StatelessWidget {
-  final String userName;
-
-  const DrawerMenu({
-    super.key,
-    required this.userName,
-  });
+  const DrawerMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -88,14 +83,7 @@ class DrawerMenu extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.blue,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Menu'),
-                Text(userName,
-                    style: TextStyle(color: Colors.white)), // Display userName
-              ],
-            ),
+            child: Text('Menu'),
           ),
           /* ListTile(
             title: const Text('Teacher Dashboard'),
