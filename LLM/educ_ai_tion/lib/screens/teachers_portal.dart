@@ -4,6 +4,9 @@ import 'question_generator_screen.dart';
 import 'generated_questions_screen.dart';
 import 'file_upload_screen.dart';
 import 'grade_screen.dart';
+import 'question_file_list.dart';
+import 'question_display_screen.dart';
+import 'suggest_activity.dart';
 
 // Teacher's Portal
 
@@ -65,6 +68,22 @@ drawer: const DrawerMenu(),
                 ),
                 child: const Text('Upload File'),
               ),
+               ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SuggestScreen()),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue[700],
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
+            child: const Text('Activity Suggestions'),
+          ),
               ElevatedButton(
                 onPressed: () {Navigator.push(
                     context,
@@ -78,10 +97,13 @@ drawer: const DrawerMenu(),
                   ),
                   minimumSize: const Size(200, 50),
                 ),
-                child: const Text('Gradebook'),
+                child: const Text('Grade'),
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => QuestionFileList()),
+                  );},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue[700],
                   foregroundColor: Colors.white,
@@ -97,7 +119,7 @@ drawer: const DrawerMenu(),
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => GeneratedQuestionsScreen()),
+                        builder: (context) => QuestionDisplayScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -197,7 +219,12 @@ drawer: const DrawerMenu(),
             child: const Text('Upload File'),
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SuggestScreen()),
+              );
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue[700],
               foregroundColor: Colors.white,
@@ -205,10 +232,27 @@ drawer: const DrawerMenu(),
                 borderRadius: BorderRadius.circular(10.0),
               ),
             ),
-            child: const Text('Gradebook'),
+            child: const Text('Activity Suggestions'),
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => GradingScreen()),
+                  );},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue[700],
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
+            child: const Text('Grade'),
+          ),
+          ElevatedButton(
+            onPressed: () {Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => QuestionFileList()),
+                  );},
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue[700],
               foregroundColor: Colors.white,
@@ -223,7 +267,7 @@ drawer: const DrawerMenu(),
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => GeneratedQuestionsScreen()),
+                    builder: (context) => QuestionDisplayScreen()),
               );
             },
             style: ElevatedButton.styleFrom(
