@@ -5,6 +5,9 @@ import 'question_generator_screen.dart';
 import 'grade_screen.dart';
 import 'settings_screen.dart';
 import 'package:flutter/material.dart';
+import 'homework_screen.dart';
+import 'homework_upload_screen.dart';
+import 'study_activity.dart';
 
 class StudentHomePage extends StatelessWidget {
   const StudentHomePage({Key? key}) : super(key: key);
@@ -24,29 +27,37 @@ class StudentHomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text('Welcome to ESS'),
-            ElevatedButton(
-              onPressed: () {
-                // You can implement the logic to navigate to the "View Class" screen
-                // when this button is pressed
+            ElevatedButton(onPressed: ()
+  { Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => HomeworkFileList()),
+              );
                 print('Navigate to View Class screen');
               },
-              child: const Text('View a Class'),
+              child: const Text('Download Homework'),
             ),
             ElevatedButton(
               onPressed: () {
-                // You can implement the logic to navigate to the "View Grades" screen
-                // when this button is pressed
-                print('Navigate to View Grades screen');
+                Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => HomeworkUpload()),
+              );
+                print('Navigate to upload Homework');
               },
-              child: const Text('View Grades'),
+              child: const Text('Upload Homework'),
             ),
             ElevatedButton(
               onPressed: () {
-                // You can implement the logic to navigate to other screens
-                // when this button is pressed
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Activity()),
+                  );
                 print('Navigate to another screen');
               },
-              child: const Text('Another Option'),
+              child: const Text('Study Activity'),
             ),
           ],
         ),
