@@ -4,18 +4,19 @@ import 'package:file_picker/file_picker.dart';
 import '../services/file_service.dart';
 import 'dart:io';
 
+
 // File Upload Screen
 
 // This screen facilitates the uploading of files by the user. It is designed to accept test templates or other educational materials.
 // The uploaded files can then be processed or stored by the application, enabling teachers to work with their existing documents or templates.
 
-class FileUploadScreen extends StatefulWidget {
-  const FileUploadScreen({Key? key}) : super(key: key);
+class HomeworkUpload extends StatefulWidget {
+  const HomeworkUpload({Key? key}) : super(key: key);
   @override
-  _FileUploadScreenState createState() => _FileUploadScreenState();
+  _HomeworkUploadState createState() => _HomeworkUploadState();
 }
 
-class _FileUploadScreenState extends State<FileUploadScreen> {
+class _HomeworkUploadState extends State<HomeworkUpload> {
   final FileStorageService _storageService = FileStorageService();
   Map<String, bool> _pickedFiles = {};
 
@@ -80,7 +81,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
           Scaffold.of(context).openDrawer();
         },
       ),
-      //drawer: const DrawerMenu(),
+      drawer: const DrawerMenu(),
       body: Column(
         children: [
           Expanded(

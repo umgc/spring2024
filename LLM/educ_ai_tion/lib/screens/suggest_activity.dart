@@ -2,24 +2,18 @@ import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../services/openai_services.dart'; // Ensure this import matches the location of your OpenAIService class
 
-// Grading Screen
-//
-// This screen allows teachers to grade assignments using the OpenAI API.
-// Users can copy questions, a rubric and students completed assingments
-
 
 /// A screen that allows users to grade questions based on input text.
-class GradingScreen extends StatefulWidget {
-  const GradingScreen({super.key});
+class SuggestScreen extends StatefulWidget {
+  const SuggestScreen({super.key});
   @override
-  _GradingScreenState createState() =>
-      _GradingScreenState();
+  _SuggestScreenState createState() =>
+      _SuggestScreenState();
 }
 
-class _GradingScreenState extends State<GradingScreen> {
+class _SuggestScreenState extends State<SuggestScreen> {
   final TextEditingController _controllerOne = TextEditingController();
-  final TextEditingController _controllerTwo = TextEditingController();
-  final TextEditingController _controllerThree = TextEditingController();
+  
   
   String _grade = "";
 
@@ -31,22 +25,15 @@ class _GradingScreenState extends State<GradingScreen> {
     if (_controllerOne.text.isEmpty) {
       // Optionally handle the case where the text field is empty
       return;
-    }
-    if (_controllerTwo.text.isEmpty || _controllerThree.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Please enter the assignment, rubric, and students answers.')),
-        // Optionally handle the case where the dropdowns are not selected
-      );
-      return;
+    
     }
     final String prompt =
-        "For the questions ${_controllerOne.text} grade the following answers ${_controllerTwo.text} based on the following answers: ${_controllerThree.text}.";
+        "Suggest class activities or ideas for the following subject: ${_controllerOne.text} ";
 
     try {
       // Use the OpenAIService to grade questions based on the input text
       final String response = await _openAIService.generateText(prompt,
-          'gpt-4'); //biggest component for integrating with openaiservice
+          'gpt-4-turbo-preview'); //biggest component for integrating with openaiservice
       setState(() {
         _grade = response;
       });
@@ -56,12 +43,12 @@ class _GradingScreenState extends State<GradingScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content:
-                Text('Failed to generate grades. Please try again later.')),
+                Text('Failed to generate assignment. Please try again later.')),
       );
     }
   }
 
-  /// Clears the generated grade.
+  /// Clears the generated suggestion
   void _clearResponse() async {
     final bool confirmClear = await showDialog(
           context: context,
@@ -69,7 +56,7 @@ class _GradingScreenState extends State<GradingScreen> {
             return AlertDialog(
               title: const Text('Confirmation'),
               content: const Text(
-                  'Are you sure you want to clear the grade?'),
+                  'Are you sure you want to clear the assignment?'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -99,7 +86,7 @@ class _GradingScreenState extends State<GradingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-          title: 'Assignment Grading',
+          title: 'Activity Suggestions',
           onMenuPressed: () {
             Scaffold.of(context).openDrawer();
           },
@@ -113,7 +100,7 @@ class _GradingScreenState extends State<GradingScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                    'Copy the assignment questions here:'),
+                    'Enter here:'),
                 TextField(
                   controller: _controllerOne,
                   decoration: const InputDecoration(
@@ -122,34 +109,7 @@ class _GradingScreenState extends State<GradingScreen> {
                   maxLines: 5,
                 ),
                 const SizedBox(height: 20),
-                Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                    'Enter your rubric for grading:'),
-                TextField(
-                  controller: _controllerTwo,
-                  decoration: const InputDecoration(
-                    hintText: 'e.g., "1 point each question for correct grammer, 2 points each question for correct content. . ."',
-                  ),
-                  maxLines: 5,
-                ),
-                const SizedBox(height: 20),
-              ], ),
-               Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                    'Copy the students answers:'),
-                TextField(
-                  controller: _controllerThree,
-                  decoration: const InputDecoration(
-                    hintText: 'e.g., "1. the first president was ..."',
-                  ),
-                  maxLines: 5,
-                ),
-                const SizedBox(height: 20),
-              ], ),   
+                
                 const SizedBox(height: 20),
                 ElevatedButton(
                     onPressed: _generateQuestions,
@@ -160,7 +120,7 @@ class _GradingScreenState extends State<GradingScreen> {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    child: const Text('Grade Questions')),
+                    child: const Text('Suggest Activities')),
                 const SizedBox(height: 20),
                 Expanded(
                   child: SingleChildScrollView(

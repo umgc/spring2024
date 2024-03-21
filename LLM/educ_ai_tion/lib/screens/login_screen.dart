@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:educ_ai_tion/screens/teacher_home_page.dart';
 import 'package:educ_ai_tion/screens/student_home_page.dart';
+import 'package:educ_ai_tion/screens/teachers_portal.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -62,7 +63,7 @@ class LoginScreenState extends State<LoginScreen> {
           context,
           MaterialPageRoute(
             builder: (context) =>
-                isTeacher ? TeacherHomePage() : StudentHomePage(),
+                isTeacher ? TeachersPortal() : StudentHomePage(),
           ),
         );
       }).catchError((error) {
