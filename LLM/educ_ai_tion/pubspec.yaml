@@ -1,5 +1,5 @@
 name: educ_ai_tion
-description: "A new Flutter project."
+description: "SWEN 670 Group Project"
 publish_to: 'none'
 version: 0.1.0
 
@@ -33,6 +33,7 @@ dependencies:
   http: ^0.13.3 # for making http requests to openai
   collection: ^1.17.2
   fetch_client: ^1.0.2
+  url_launcher: ^6.2.5
 
 dev_dependencies:
   flutter_test:
