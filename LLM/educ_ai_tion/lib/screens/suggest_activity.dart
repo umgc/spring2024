@@ -2,19 +2,16 @@ import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../services/openai_services.dart'; // Ensure this import matches the location of your OpenAIService class
 
-
 /// A screen that allows users to grade questions based on input text.
 class SuggestScreen extends StatefulWidget {
   const SuggestScreen({super.key});
   @override
-  _SuggestScreenState createState() =>
-      _SuggestScreenState();
+  _SuggestScreenState createState() => _SuggestScreenState();
 }
 
 class _SuggestScreenState extends State<SuggestScreen> {
   final TextEditingController _controllerOne = TextEditingController();
-  
-  
+
   String _grade = "";
 
   final OpenAIService _openAIService =
@@ -25,7 +22,6 @@ class _SuggestScreenState extends State<SuggestScreen> {
     if (_controllerOne.text.isEmpty) {
       // Optionally handle the case where the text field is empty
       return;
-    
     }
     final String prompt =
         "Suggest class activities or ideas for the following subject: ${_controllerOne.text} ";
@@ -55,8 +51,8 @@ class _SuggestScreenState extends State<SuggestScreen> {
           builder: (context) {
             return AlertDialog(
               title: const Text('Confirmation'),
-              content: const Text(
-                  'Are you sure you want to clear the assignment?'),
+              content:
+                  const Text('Are you sure you want to clear the assignment?'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -86,12 +82,12 @@ class _SuggestScreenState extends State<SuggestScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-          title: 'Activity Suggestions',
-          onMenuPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        ),
-        drawer: const DrawerMenu(),
+        title: 'Activity Suggestions',
+        onMenuPressed: () {
+          Scaffold.of(context).openDrawer();
+        },
+      ),
+      //drawer: const DrawerMenu(),
       body: Stack(
         children: [
           Padding(
@@ -99,8 +95,7 @@ class _SuggestScreenState extends State<SuggestScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                    'Enter here:'),
+                const Text('Enter here:'),
                 TextField(
                   controller: _controllerOne,
                   decoration: const InputDecoration(
@@ -109,7 +104,6 @@ class _SuggestScreenState extends State<SuggestScreen> {
                   maxLines: 5,
                 ),
                 const SizedBox(height: 20),
-                
                 const SizedBox(height: 20),
                 ElevatedButton(
                     onPressed: _generateQuestions,
@@ -130,19 +124,17 @@ class _SuggestScreenState extends State<SuggestScreen> {
               ],
             ),
           ),
-         
           Positioned(
             bottom: 20,
             left: 20,
             child: ElevatedButton(
               onPressed: _clearResponse,
               style: ElevatedButton.styleFrom(
-                 backgroundColor: Colors.blue[700],
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      )
-              ),
+                  backgroundColor: Colors.blue[700],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  )),
               child: const Text('Clear Response'),
             ),
           )

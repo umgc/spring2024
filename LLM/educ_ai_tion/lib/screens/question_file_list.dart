@@ -57,7 +57,7 @@ class _FileListViewState extends State<QuestionFileList> {
           Scaffold.of(context).openDrawer();
         },
       ),
-      drawer: const DrawerMenu(),
+      //drawer: const DrawerMenu(),
       body: Padding(
         padding: const EdgeInsets.only(top: 30.0),
         child: ListView.builder(

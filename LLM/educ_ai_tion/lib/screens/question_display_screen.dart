@@ -136,7 +136,7 @@ class _QuestionDisplayScreenState extends State<QuestionDisplayScreen> {
           Scaffold.of(context).openDrawer();
         },
       ),
-      drawer: const DrawerMenu(),
+      //drawer: const DrawerMenu(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
