@@ -15,7 +15,7 @@ class GeneratedQuestionsScreen extends StatelessWidget {
           Scaffold.of(context).openDrawer();
         },
       ),
-      drawer: const DrawerMenu(),
+      //drawer: const DrawerMenu(),
       body: FutureBuilder(
         future: loadQuestions(),
         builder:

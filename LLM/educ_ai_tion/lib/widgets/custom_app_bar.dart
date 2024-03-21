@@ -71,7 +71,12 @@ class _CustomAppBarState extends State<CustomAppBar> {
 }
 
 class DrawerMenu extends StatelessWidget {
-  const DrawerMenu({super.key});
+  final String userName;
+
+  const DrawerMenu({
+    super.key,
+    required this.userName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -83,9 +88,16 @@ class DrawerMenu extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.blue,
             ),
-            child: Text('Menu'),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Menu'),
+                Text(userName,
+                    style: TextStyle(color: Colors.white)), // Display userName
+              ],
+            ),
           ),
-          ListTile(
+          /* ListTile(
             title: const Text('Teacher Dashboard'),
             onTap: () {
               Navigator.pop(context); // Close the drawer
@@ -95,7 +107,7 @@ class DrawerMenu extends StatelessWidget {
                     builder: (context) => const TeacherHomePage()),
               );
             },
-          ),
+          ), 
           ListTile(
             title: const Text('Teacher Portal'),
             onTap: () {
@@ -149,7 +161,7 @@ class DrawerMenu extends StatelessWidget {
                     builder: (context) => const QuestionFileList()),
               );
             },
-          ),
+          ),*/
           ListTile(
             title: const Text('Settings'),
             onTap: () {

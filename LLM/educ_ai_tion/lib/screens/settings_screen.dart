@@ -2,8 +2,8 @@ import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 
 // Settings Screen
-// 
-// This screen provides options for customizing the application settings. Users can adjust preferences related to question generation, 
+//
+// This screen provides options for customizing the application settings. Users can adjust preferences related to question generation,
 //notification settings, and other customizable aspects of the app to tailor the experience to their needs.
 
 class SettingsScreen extends StatefulWidget {
@@ -19,12 +19,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-          title: 'Settings',
-          onMenuPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        ),
-        drawer: const DrawerMenu(),
+        title: 'Settings',
+        onMenuPressed: () {
+          Scaffold.of(context).openDrawer();
+        },
+      ),
+      //drawer: const DrawerMenu(),
       body: ListView(
         children: <Widget>[
           SwitchListTile(

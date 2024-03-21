@@ -80,7 +80,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
           Scaffold.of(context).openDrawer();
         },
       ),
-      drawer: const DrawerMenu(),
+      //drawer: const DrawerMenu(),
       body: Column(
         children: [
           Expanded(
