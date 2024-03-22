@@ -5,9 +5,9 @@ extension DifficultyEnumExtension on String {
     switch (toLowerCase()) {
       case 'easy':
         return Difficulty.easy;
-      case 'intermediate':
+      case 'medium':
         return Difficulty.medium;
-      case 'advanced':
+      case 'hard':
         return Difficulty.hard;
       default:
         return Difficulty.easy;

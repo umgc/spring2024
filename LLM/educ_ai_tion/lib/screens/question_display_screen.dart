@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:educ_ai_tion/models/question.dart';
 import 'package:educ_ai_tion/models/difficulty_enum.dart';
+import 'package:educ_ai_tion/models/subject_enum.dart';
 import 'package:educ_ai_tion/services/question_data.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -13,7 +14,6 @@ class QuestionDisplayScreen extends StatefulWidget {
   const QuestionDisplayScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _QuestionDisplayScreenState createState() => _QuestionDisplayScreenState();
 }
 
@@ -22,6 +22,7 @@ class _QuestionDisplayScreenState extends State<QuestionDisplayScreen> {
   late List<Question> _questions = [];
   int _selectedGrade = 0;
   Difficulty? _selectedDifficulty;
+  Subject? _selectedSubject;
   List<Question> _selectedQuestions = [];
 
   @override
@@ -56,7 +57,9 @@ class _QuestionDisplayScreenState extends State<QuestionDisplayScreen> {
           _selectedGrade == 0 || question.grade == _selectedGrade;
       final bool difficultyMatch = _selectedDifficulty == null ||
           question.difficulty == _selectedDifficulty;
-      return gradeMatch && difficultyMatch;
+      final bool subjectMatch =
+          _selectedSubject == null || question.subject == _selectedSubject;
+      return gradeMatch && difficultyMatch && subjectMatch;
     }).toList();
   }
 
@@ -71,59 +74,94 @@ class _QuestionDisplayScreenState extends State<QuestionDisplayScreen> {
   }
 
   void _storeSelectedQuestions(BuildContext context) async {
-    try {
-      // Generate the text content based on the selected questions
-      String textContent = _selectedQuestions.map((question) {
-        return '''
+    // Show dialog to prompt user for filename
+    String? fileName = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        TextEditingController _fileNameController = TextEditingController();
+        return AlertDialog(
+          title: Text('Save Selected Questions'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Enter preferred filename:'),
+              TextFormField(
+                controller: _fileNameController,
+                decoration: InputDecoration(
+                  hintText: 'Filename',
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(_fileNameController.text);
+              },
+              child: Text('Save'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+    if (fileName != null && fileName.isNotEmpty) {
+      try {
+        // Generate the text content based on the selected questions
+        String textContent = _selectedQuestions.map((question) {
+          return '''
       Topic: ${question.topic}
       Question: ${question.question}
       Grade: ${question.grade}
       Difficulty: ${question.difficulty.name}
       ''';
-      }).join('\n\n');
+        }).join('\n\n');
+        // Get the current date
+        DateTime now = DateTime.now();
+        String currentDate = '${now.year}-${now.month}-${now.day}';
 
-      // Get the current date
-      String currentDate = DateTime.now().toString();
-
-      // Define the file name format
-      String fileName =
-          '${_selectedGrade}_${_selectedDifficulty?.name ?? 'All'}_$currentDate.txt';
-
-      if (kIsWeb) {
-        // For web, upload the text content directly to Firebase Storage
-        Reference storageRef =
-            FirebaseStorage.instance.ref('selected_questions/$fileName');
-        await storageRef.putString(textContent);
-      } else {
-        // For mobile, create a temporary file and upload it
-        Uint8List data = utf8.encode(textContent);
-        Reference storageRef =
-            FirebaseStorage.instance.ref('selected_questions/$fileName');
-        await storageRef.putData(data);
+        // Define the file name format (user-provided filename + current date)
+        String finalFileName = '$fileName-$currentDate.txt';
+        // Upload the text content to Firebase Storage
+        if (kIsWeb) {
+          // For web, upload the text content directly to Firebase Storage
+          Reference storageRef =
+              FirebaseStorage.instance.ref('selected_questions/$finalFileName');
+          await storageRef.putString(textContent);
+        } else {
+          // For mobile, create a temporary file and upload it
+          Uint8List data = utf8.encode(textContent);
+          Reference storageRef =
+              FirebaseStorage.instance.ref('selected_questions/$finalFileName');
+          await storageRef.putData(data);
+        }
+        // Show dialog to inform the user that the file is saved
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('File Saved'),
+              content: Text('File $finalFileName is created and saved.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+        print('Selected questions stored successfully.');
+      } catch (e) {
+        print('Error storing selected questions: $e');
       }
-
-      // Show dialog to inform the user that the file is saved
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('File Saved'),
-            content: Text('File $fileName is created and saved.'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-
-      print('Selected questions stored successfully.');
-    } catch (e) {
-      print('Error storing selected questions: $e');
     }
   }
 
@@ -136,11 +174,35 @@ class _QuestionDisplayScreenState extends State<QuestionDisplayScreen> {
           Scaffold.of(context).openDrawer();
         },
       ),
-      //drawer: const DrawerMenu(),
+      drawer: const DrawerMenu(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: 25), // Add spacing
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: DropdownButton<Subject>(
+                  value: _selectedSubject,
+                  hint: const Text('Select Subject'),
+                  onChanged: (Subject? newValue) {
+                    setState(() {
+                      _selectedSubject = newValue;
+                    });
+                  },
+                  items: Subject.values.map((Subject value) {
+                    return DropdownMenuItem<Subject>(
+                      value: value,
+                      child: Text(value.name),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10), // Add spacing
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -189,9 +251,10 @@ class _QuestionDisplayScreenState extends State<QuestionDisplayScreen> {
             child: SingleChildScrollView(
               child: PaginatedDataTable(
                 header: const Text('Questions'),
-                rowsPerPage: 5,
+                rowsPerPage: 10,
                 columns: const [
                   DataColumn(label: Text('Select')),
+                  DataColumn(label: Text('Subject')),
                   DataColumn(label: Text('Topic')),
                   DataColumn(label: Text('Question')),
                   DataColumn(label: Text('Grade')),
@@ -243,6 +306,7 @@ class _QuestionDataSource extends DataTableSource {
             onChanged: (_) => toggleQuestionSelection(question),
           ),
         ),
+        DataCell(Text(question.subject.name)),
         DataCell(Text(question.topic)),
         DataCell(Text(question.question)),
         DataCell(Text(question.grade.toString())),

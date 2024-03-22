@@ -37,15 +37,36 @@ class Question {
   factory Question.fromSnapshot(QueryDocumentSnapshot snapshot) {
     final data = snapshot.data() as Map<String, dynamic>;
     return Question(
-      subject: data['subject'] ?? '',
+      subject: _parseSubject(data['subject']),
       topic: data['topic'] ?? '',
-      difficulty: Difficulty.values.firstWhere(
-        (e) => e.toString().split('.').last == data['difficulty'],
-        orElse: () => Difficulty.easy,
-      ),
+      difficulty: _parseDifficulty(data['difficulty']),
       question: data['question'] ?? '',
-      date: data['date'].toDate() ?? '',
-      grade: data['grade'] ?? '',
+      date: data['date'].toDate() ?? DateTime.now(),
+      grade: data['grade'] ?? 0,
+    );
+  }
+
+  static Subject _parseSubject(String? subjectString) {
+    if (subjectString == null || subjectString.isEmpty) {
+      return Subject.Math; // Default subject
+    }
+    return Subject.values.firstWhere(
+      (subject) =>
+          subject.toString().split('.').last.toLowerCase() ==
+          subjectString.toLowerCase(),
+      orElse: () => Subject.Math, // Default subject
+    );
+  }
+
+  static Difficulty _parseDifficulty(String? difficultyString) {
+    if (difficultyString == null || difficultyString.isEmpty) {
+      return Difficulty.easy; // Default difficulty
+    }
+    return Difficulty.values.firstWhere(
+      (difficulty) =>
+          difficulty.toString().split('.').last.toLowerCase() ==
+          difficultyString.toLowerCase(),
+      orElse: () => Difficulty.easy, // Default difficulty
     );
   }
 }
