@@ -1,5 +1,7 @@
 import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:educ_ai_tion/theme_provider.dart';
 
 // Settings Screen
 //
@@ -17,6 +19,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Settings',
@@ -27,6 +30,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
       //drawer: const DrawerMenu(),
       body: ListView(
         children: <Widget>[
+          SwitchListTile(
+            title: const Text('Dark Mode'),
+            value: themeProvider.isDarkMode,
+            onChanged: (bool value) {
+              setState(() {
+                themeProvider.toggleTheme();
+              });
+            },
+          ),
           SwitchListTile(
             title: const Text('Enable Notifications'),
             value: _notificationsEnabled,
