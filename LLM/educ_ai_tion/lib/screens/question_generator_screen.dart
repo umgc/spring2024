@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Import for FilteringTextInputFormatter
+import 'package:flutter/services.dart';
 import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:educ_ai_tion/models/difficulty_enum.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -284,6 +284,7 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
 
     try {
       final List<String> questionLines = _generatedQuestions.split('\n');
+      final List<Future<void>> savingTasks = [];
 
       questionLines.forEach((questionText) {
         final Question question = Question(
@@ -297,17 +298,14 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
 
         FirebaseFirestore.instance
             .collection('questions')
-            .add(question.toMap())
-            .then((value) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Question added successfully.'),
-          ));
-        }).catchError((error) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Failed to add question: $error'),
-          ));
-        });
+            .add(question.toMap());
       });
+
+      await Future.wait(savingTasks);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('All questions added successfully.')),
+      );
 
       setState(() {
         _generatedQuestions = "";
