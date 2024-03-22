@@ -39,7 +39,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               });
             },
           ),
-          SwitchListTile(
+          /* SwitchListTile(
             title: const Text('Enable Notifications'),
             value: _notificationsEnabled,
             onChanged: (bool value) {
@@ -54,7 +54,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onTap: () {
               // Navigate to account settings screen or show account settings options
             },
-          ),
+          ), */
           // Add more settings options as needed
         ],
       ),
