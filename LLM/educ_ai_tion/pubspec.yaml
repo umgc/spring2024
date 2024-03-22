@@ -45,12 +45,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets: 
-   - assets/images/home_image_courseCreation.png
-   - assets/images/home_image_createinteractive.png
-   - assets/images/home_image_empTeacher.png
-   - assets/images/home_image_GradeWork.png
-   - assets/images/home_image_top.png
-   - assets/images/logo.png
+   - assets/images/
    - .env
 
 
