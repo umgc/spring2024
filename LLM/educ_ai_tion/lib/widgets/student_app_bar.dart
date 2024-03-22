@@ -2,6 +2,7 @@ import 'package:educ_ai_tion/screens/student_home_page.dart';
 import 'package:educ_ai_tion/screens/welcome_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:educ_ai_tion/screens/settings_screen.dart';
 
 class StudentAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
@@ -79,7 +80,7 @@ class DrawerMenu extends StatelessWidget {
             ),
             child: Text('Menu'),
           ),
-          ListTile(
+          /* ListTile(
             title: const Text('Student Homepage'),
             onTap: () {
               Navigator.pop(context); // Close the drawer
@@ -120,6 +121,16 @@ class DrawerMenu extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                     builder: (context) => const StudentHomePage()),
+              );
+            },
+          ), */
+          ListTile(
+            title: const Text('Settings'),
+            onTap: () {
+              Navigator.pop(context); // Close the drawer
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
               );
             },
           ),

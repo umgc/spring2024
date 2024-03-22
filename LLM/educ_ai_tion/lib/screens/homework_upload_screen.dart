@@ -1,9 +1,9 @@
-import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../services/file_service.dart';
 import 'dart:io';
-
+import 'package:path/path.dart' as path;
+import 'dart:typed_data';
 
 // File Upload Screen
 
@@ -18,70 +18,105 @@ class HomeworkUpload extends StatefulWidget {
 
 class _HomeworkUploadState extends State<HomeworkUpload> {
   final FileStorageService _storageService = FileStorageService();
+
+  // Store file paths and selection status
   Map<String, bool> _pickedFiles = {};
 
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles(allowMultiple: true);
 
     if (result != null) {
-      _pickedFiles.clear();
-      try {
-        for (var file in result.files) {
-          final name = file.name;
-          //final path = file.path ?? ''; causes an error
-          final bytes = file.bytes;
-          if (bytes != null) {
-            await _storageService.uploadFile(name, bytes);
-          }
+      // Update _pickedFiles with new selections, maintaining previous selections
+      for (var file in result.files) {
+        final path = file.path ?? '';
+        if (!_pickedFiles.containsKey(path)) {
+          // Avoid overriding selections on re-picking
+          _pickedFiles[path] = false; // Add new file as not selected by default
         }
-
-        // Trigger UI update
-        setState(() {});
-
-        // Simulated upload feedback
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Uploaded ${result.files.length} files')),
-        );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error uploading files: $e')),
-        );
       }
+
+      setState(() {}); // Refresh UI to display newly picked files
     }
   }
 
   Future<void> _uploadToAI() async {
     if (_pickedFiles.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("No files selected to upload to AI")),
+        const SnackBar(content: Text("No files selected")),
       );
       return;
     }
 
-    // Placeholder: Process each file for AI upload
-    for (String filePath
-        in _pickedFiles.keys.where((key) => _pickedFiles[key]!)) {
-      print("Uploading file to AI: $filePath");
-      // Here, replace print with your logic to read the file and upload its content to the AI service
-      //Rene's note, does this ^ still need to be done?
+    // Identify .txt files that were selected for upload
+    var filesToUpload = _pickedFiles.keys
+        .where((path) =>
+            _pickedFiles[path]! && path.toLowerCase().endsWith('.txt'))
+        .toList();
+
+    // Identify non-.txt files that were selected for upload
+    var nonTxtFilesSelected = _pickedFiles.keys
+        .where((path) =>
+            _pickedFiles[path]! && !path.toLowerCase().endsWith('.txt'))
+        .toList();
+
+    if (nonTxtFilesSelected.isNotEmpty) {
+      // Notify the user that non-.txt files cannot be uploaded
+      String nonTxtFileNames =
+          nonTxtFilesSelected.map((e) => e.split('/').last).join(', ');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                "Only .txt files are allowed. These files were not uploaded: $nonTxtFileNames")),
+      );
+      setState(() {
+        nonTxtFilesSelected.forEach(_pickedFiles.remove);
+      });
     }
 
-    // Feedback
+    if (filesToUpload.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("No valid files selected to upload")),
+      );
+      return; // No valid .txt files to upload, return early
+    }
+
+    int uploadCount = 0;
+
+    try {
+      for (String filePath in filesToUpload) {
+        String fileName = path.basename(filePath); // Extract the file name
+        Uint8List fileBytes =
+            await File(filePath).readAsBytes(); // Read the file as bytes
+        await _storageService.uploadFile(fileName, fileBytes); // Upload file
+        // This feels redundant, but holding for eval
+        //ScaffoldMessenger.of(context).showSnackBar(
+        //  SnackBar(content: Text("Uploaded .txt file to Storage: $fileName")),
+        //);
+        uploadCount++;
+        setState(() {
+          _pickedFiles.remove(filePath);
+        });
+      }
+    } catch (e) {
+      // Display snackbar of error uploading file
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error uploading file: $e")),
+      );
+    }
+
+    // Notify the user about successful upload
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Uploaded ${_pickedFiles.length} files to AI")),
+      SnackBar(content: Text("Uploaded $uploadCount .txt files to Storage")),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'Upload Content',
-        onMenuPressed: () {
-          Scaffold.of(context).openDrawer();
-        },
+      appBar: AppBar(
+        title: const Text('Upload Content'),
+        backgroundColor: Colors.blue[700],
       ),
-      drawer: const DrawerMenu(),
       body: Column(
         children: [
           Expanded(
@@ -126,17 +161,25 @@ class _HomeworkUploadState extends State<HomeworkUpload> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
-              onPressed:
-                  _uploadToAI, // Make sure you've defined _uploadToAI method as shown earlier
+              onPressed: _uploadToAI,
               style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    Colors.green, // Use a distinct color for differentiation
+                backgroundColor: Colors.green,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-              child: const Text('Upload to AI'),
+              child: const Text('Upload'),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Upload restricted to .txt files',
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 16,
+              ),
             ),
           ),
         ],
