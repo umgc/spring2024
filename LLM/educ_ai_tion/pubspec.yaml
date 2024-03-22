@@ -51,5 +51,6 @@ flutter:
    - assets/images/home_image_GradeWork.png
    - assets/images/home_image_top.png
    - assets/images/logo.png
+   - .env
 
 
