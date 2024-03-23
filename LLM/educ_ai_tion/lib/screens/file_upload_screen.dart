@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../services/file_service.dart';
-import 'dart:io';
-import 'package:path/path.dart' as path;
 import 'dart:typed_data';
-
-// File Upload Screen
-//
-// This screen facilitates the uploading of files by the user. It is designed to accept test templates or other educational materials.
-// The uploaded files can then be processed or stored by the application, enabling teachers to work with their existing documents or templates.
 
 class FileUploadScreen extends StatefulWidget {
   @override
@@ -18,95 +11,67 @@ class FileUploadScreen extends StatefulWidget {
 class _FileUploadScreenState extends State<FileUploadScreen> {
   final FileStorageService _storageService = FileStorageService();
 
-  // Store file paths and selection status
-  Map<String, bool> _pickedFiles = {};
+  // Store file names and their bytes
+  Map<String, Uint8List> _pickedFilesBytes = {};
+  Map<String, bool> _pickedFilesSelection = {};
 
   Future<void> _pickFile() async {
-    final result = await FilePicker.platform.pickFiles(allowMultiple: true);
+    final result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+      withData: true,
+      type: FileType.any, // Keep this to allow any file type
+    );
 
     if (result != null) {
-      // Update _pickedFiles with new selections, maintaining previous selections
       for (var file in result.files) {
-        final path = file.path ?? '';
-        if (!_pickedFiles.containsKey(path)) {
-          // Avoid overriding selections on re-picking
-          _pickedFiles[path] = false; // Add new file as not selected by default
+        final fileName = file.name ?? '';
+        if (!_pickedFilesSelection.containsKey(fileName)) {
+          _pickedFilesSelection[fileName] = false;
+          _pickedFilesBytes[fileName] = file.bytes!;
         }
       }
 
-      setState(() {}); // Refresh UI to display newly picked files
+      setState(() {});
     }
   }
 
   Future<void> _uploadToAI() async {
-    if (_pickedFiles.isEmpty) {
+    if (_pickedFilesSelection.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("No files selected")),
       );
       return;
     }
 
-    // Identify .txt files that were selected for upload
-    var filesToUpload = _pickedFiles.keys
-        .where((path) =>
-            _pickedFiles[path]! && path.toLowerCase().endsWith('.txt'))
+    var filesToUpload = _pickedFilesSelection.keys
+        .where((name) => _pickedFilesSelection[name]!)
         .toList();
-
-    // Identify non-.txt files that were selected for upload
-    var nonTxtFilesSelected = _pickedFiles.keys
-        .where((path) =>
-            _pickedFiles[path]! && !path.toLowerCase().endsWith('.txt'))
-        .toList();
-
-    if (nonTxtFilesSelected.isNotEmpty) {
-      // Notify the user that non-.txt files cannot be uploaded
-      String nonTxtFileNames =
-          nonTxtFilesSelected.map((e) => e.split('/').last).join(', ');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-                "Only .txt files are allowed. These files were not uploaded: $nonTxtFileNames")),
-      );
-      setState(() {
-        nonTxtFilesSelected.forEach(_pickedFiles.remove);
-      });
-    }
 
     if (filesToUpload.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("No valid files selected to upload")),
+        SnackBar(content: Text("No files selected to upload")),
       );
-      return; // No valid .txt files to upload, return early
+      return;
     }
 
-    int uploadCount = 0;
-
     try {
-      for (String filePath in filesToUpload) {
-        String fileName = path.basename(filePath); // Extract the file name
+      for (String fileName in filesToUpload) {
         Uint8List fileBytes =
-            await File(filePath).readAsBytes(); // Read the file as bytes
+            _pickedFilesBytes[fileName]!; // Use bytes directly
         await _storageService.uploadFile(fileName, fileBytes); // Upload file
-        // This feels redundant, but holding for eval
-        //ScaffoldMessenger.of(context).showSnackBar(
-        //  SnackBar(content: Text("Uploaded .txt file to Storage: $fileName")),
-        //);
-        uploadCount++;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Uploaded file to Storage: $fileName")),
+        );
         setState(() {
-          _pickedFiles.remove(filePath);
+          _pickedFilesSelection.remove(fileName);
+          _pickedFilesBytes.remove(fileName);
         });
       }
     } catch (e) {
-      // Display snackbar of error uploading file
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error uploading file: $e")),
       );
     }
-
-    // Notify the user about successful upload
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Uploaded $uploadCount .txt files to Storage")),
-    );
   }
 
   @override
@@ -120,23 +85,23 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: _pickedFiles.length,
+              itemCount: _pickedFilesSelection.length,
               itemBuilder: (context, index) {
-                String filePath = _pickedFiles.keys.elementAt(index);
-                String fileName = filePath.split('/').last;
+                String fileName = _pickedFilesSelection.keys.elementAt(index);
                 return CheckboxListTile(
                   title: Text(fileName),
-                  value: _pickedFiles[filePath],
+                  value: _pickedFilesSelection[fileName],
                   onChanged: (bool? value) {
                     setState(() {
-                      _pickedFiles[filePath] = value!;
+                      _pickedFilesSelection[fileName] = value!;
                     });
                   },
                   secondary: IconButton(
                     icon: Icon(Icons.delete),
                     onPressed: () {
                       setState(() {
-                        _pickedFiles.remove(filePath);
+                        _pickedFilesSelection.remove(fileName);
+                        _pickedFilesBytes.remove(fileName);
                       });
                     },
                   ),
@@ -169,16 +134,6 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
                 ),
               ),
               child: const Text('Upload to Storage'),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              'Upload restricted to .txt files',
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 16,
-              ),
             ),
           ),
         ],
