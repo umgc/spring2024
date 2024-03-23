@@ -19,6 +19,7 @@ class _GradingScreenState extends State<GradingScreen> {
   final TextEditingController _controllerTwo = TextEditingController();
   final TextEditingController _controllerThree = TextEditingController();
 
+  bool _isLoading = false;
   String _grade = "";
 
   final OpenAIService _openAIService =
@@ -39,6 +40,11 @@ class _GradingScreenState extends State<GradingScreen> {
       );
       return;
     }
+
+    setState(() {
+      _isLoading = true;
+    });
+
     final String prompt =
         "For the questions ${_controllerOne.text} grade the following answers ${_controllerTwo.text} based on the following answers: ${_controllerThree.text}.";
 
@@ -57,6 +63,10 @@ class _GradingScreenState extends State<GradingScreen> {
             content:
                 Text('Failed to generate grades. Please try again later.')),
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -165,6 +175,10 @@ class _GradingScreenState extends State<GradingScreen> {
                     child: Text(_grade),
                   ),
                 ),
+                if (_isLoading) // Check if the app is currently loading
+          Center(
+            child: CircularProgressIndicator(), // Show loading indicator
+          ),
               ],
             ),
           ),
