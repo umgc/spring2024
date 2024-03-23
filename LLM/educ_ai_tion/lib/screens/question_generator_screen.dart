@@ -27,6 +27,8 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
   final List<Difficulty> _difficultyLevels = Difficulty.values;
   final OpenAIService _openAIService = OpenAIService();
   int _numberOfQuestions = 1;
+  bool _isLoading = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -185,6 +187,12 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
                 child: Text(_generatedQuestions),
               ),
             ),
+            if (_isLoading)
+          Container(
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
           ],
         ),
       ),
@@ -239,6 +247,7 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
       return;
     }
 
+
     if (_selectedSchoolLevel == null ||
         _selectedDifficultyLevel == null ||
         _selectedSubject == null ||
@@ -251,6 +260,10 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
       );
       return;
     }
+
+    setState(() {
+      _isLoading = true;
+    });
 
     final int numberOfQuestions = int.parse(_numberOfQuestionsController);
 
@@ -271,6 +284,10 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
               Text('Failed to generate questions. Please try again later.'),
         ),
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 

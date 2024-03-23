@@ -15,6 +15,7 @@ class _ActivityState extends State<Activity> {
   final TextEditingController _controller1 = TextEditingController();
   final TextEditingController _controller2 = TextEditingController();
   String _generatedQuestions = "";
+  bool _isLoading = false;
 
   String? _selectedSchoolLevel;
   String? _selectedDifficultyLevel;
@@ -39,6 +40,10 @@ class _ActivityState extends State<Activity> {
       );
       return;
     }
+    setState(() {
+      _isLoading = true;
+    });
+
     final String prompt =
         "Create questions for a $_selectedSchoolLevel student at the $_selectedDifficultyLevel level with these parameters: ${_controller1.text}.";
 
@@ -57,6 +62,10 @@ class _ActivityState extends State<Activity> {
             content:
                 Text('Failed to generate questions. Please try again later.')),
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -226,6 +235,10 @@ final String prompt2 =
                 ),
               ],
             ),
+          ),
+           if (_isLoading) // Check if the app is currently loading
+          Center(
+            child: CircularProgressIndicator(), // Show loading indicator
           ),
           Positioned(
             bottom: 20,
