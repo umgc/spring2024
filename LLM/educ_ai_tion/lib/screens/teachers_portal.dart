@@ -11,7 +11,7 @@ import 'suggest_activity.dart';
 // Teacher's Portal
 
 class TeachersPortal extends StatefulWidget {
-const TeachersPortal({super.key});
+  const TeachersPortal({super.key});
   @override
   _TeachersPortalState createState() => _TeachersPortalState();
 }
@@ -22,11 +22,11 @@ class _TeachersPortalState extends State<TeachersPortal> {
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Teacher \'s Portal',
-          onMenuPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        ),
-drawer: const DrawerMenu(),
+        onMenuPressed: () {
+          Scaffold.of(context).openDrawer();
+        },
+      ),
+      drawer: const DrawerMenu(),
       body: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth > 600) {
@@ -68,27 +68,30 @@ drawer: const DrawerMenu(),
                 ),
                 child: const Text('Upload File'),
               ),
-               ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SuggestScreen()),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue[700],
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-            ),
-            child: const Text('Activity Suggestions'),
-          ),
               ElevatedButton(
-                onPressed: () {Navigator.push(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SuggestScreen()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue[700],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  minimumSize: const Size(200, 50),
+                ),
+                child: const Text('Activity Suggestions'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => GradingScreen()),
-                  );},
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue[700],
                   foregroundColor: Colors.white,
@@ -100,10 +103,12 @@ drawer: const DrawerMenu(),
                 child: const Text('Grade'),
               ),
               ElevatedButton(
-                onPressed: () {Navigator.push(
+                onPressed: () {
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => QuestionFileList()),
-                  );},
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue[700],
                   foregroundColor: Colors.white,
@@ -235,10 +240,12 @@ drawer: const DrawerMenu(),
             child: const Text('Activity Suggestions'),
           ),
           ElevatedButton(
-            onPressed: () {Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => GradingScreen()),
-                  );},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => GradingScreen()),
+              );
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue[700],
               foregroundColor: Colors.white,
@@ -249,10 +256,12 @@ drawer: const DrawerMenu(),
             child: const Text('Grade'),
           ),
           ElevatedButton(
-            onPressed: () {Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => QuestionFileList()),
-                  );},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => QuestionFileList()),
+              );
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue[700],
               foregroundColor: Colors.white,
