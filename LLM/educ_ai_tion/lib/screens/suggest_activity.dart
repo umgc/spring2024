@@ -12,6 +12,7 @@ class SuggestScreen extends StatefulWidget {
 class _SuggestScreenState extends State<SuggestScreen> {
   final TextEditingController _controllerOne = TextEditingController();
 
+  bool _isLoading = false;
   String _grade = "";
 
   final OpenAIService _openAIService =
@@ -23,6 +24,11 @@ class _SuggestScreenState extends State<SuggestScreen> {
       // Optionally handle the case where the text field is empty
       return;
     }
+
+    setState(() {
+      _isLoading = true;
+    });
+
     final String prompt =
         "Suggest class activities or ideas for the following subject: ${_controllerOne.text} ";
 
@@ -41,6 +47,10 @@ class _SuggestScreenState extends State<SuggestScreen> {
             content:
                 Text('Failed to generate assignment. Please try again later.')),
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -123,6 +133,10 @@ class _SuggestScreenState extends State<SuggestScreen> {
                 ),
               ],
             ),
+          ),
+          if (_isLoading) // Check if the app is currently loading
+          Center(
+            child: CircularProgressIndicator(), // Show loading indicator
           ),
           Positioned(
             bottom: 20,

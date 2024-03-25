@@ -1,4 +1,6 @@
 import 'package:educ_ai_tion/screens/welcome_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:educ_ai_tion/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,7 +12,10 @@ void main() async {
   await dotenv.load(fileName: ".env"); // Load environment variables
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await dotenv.load(fileName: ".env");
-  runApp(const MainApp());
+  runApp(
+    ChangeNotifierProvider(
+        create: (context) => ThemeProvider(), child: const MainApp()),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -18,7 +23,21 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    return MaterialApp(
+      theme: ThemeData(
+        // Define the default brightness and colors.
+        brightness: Brightness.light,
+        primaryColor: Colors.blue,
+        hintColor: Colors.cyan,
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        /* Dark theme settings */
+        primaryColor: Colors.lightBlue[800],
+        hintColor: Colors.cyan[600],
+      ),
+      themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: WelcomeScreen(),
     );
   }
