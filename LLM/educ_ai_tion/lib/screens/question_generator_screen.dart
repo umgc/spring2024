@@ -29,7 +29,6 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
   int _numberOfQuestions = 1;
   bool _isLoading = false;
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -184,15 +183,15 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
             const SizedBox(height: 20),
             Expanded(
               child: SingleChildScrollView(
-                child: Text(_generatedQuestions),
+                child: Text(_generatedQuestions.replaceAll('~', '')),
               ),
             ),
             if (_isLoading)
-          Container(
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          ),
+              Container(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
           ],
         ),
       ),
@@ -247,7 +246,6 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
       return;
     }
 
-
     if (_selectedSchoolLevel == null ||
         _selectedDifficultyLevel == null ||
         _selectedSubject == null ||
@@ -268,7 +266,7 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
     final int numberOfQuestions = int.parse(_numberOfQuestionsController);
 
     final String prompt =
-        "Create $numberOfQuestions ${_selectedSubject.toString().split('.').last} questions for a ${_selectedSchoolLevel} student at the ${_selectedDifficultyLevel.toString().split('.').last} level with these parameters: ${_controller.text}.";
+        "Create $numberOfQuestions ${_selectedSubject.toString().split('.').last} questions for a ${_selectedSchoolLevel} student at the ${_selectedDifficultyLevel.toString().split('.').last} level with these parameters: ${_controller.text}. At the end of each question, add delimiter '~'.";
 
     try {
       final String response =
@@ -300,30 +298,32 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
     }
 
     try {
-      final List<String> questionLines = _generatedQuestions.split('\n');
+      final List<String> questionLines = _generatedQuestions.split('~');
 
       questionLines.forEach((questionText) {
-        final Question question = Question(
-          topic: _controller.text.trim(),
-          difficulty: _selectedDifficultyLevel ?? Difficulty.easy,
-          question: questionText.trim(),
-          date: DateTime.now(),
-          grade: _selectedSchoolLevel ?? 1,
-          subject: _selectedSubject!,
-        );
+        if (questionText.trim().isNotEmpty) {
+          final Question question = Question(
+            topic: _controller.text.trim(),
+            difficulty: _selectedDifficultyLevel ?? Difficulty.easy,
+            question: questionText.trim(),
+            date: DateTime.now(),
+            grade: _selectedSchoolLevel ?? 1,
+            subject: _selectedSubject!,
+          );
 
-        FirebaseFirestore.instance
-            .collection('questions')
-            .add(question.toMap())
-            .then((value) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Question added successfully.'),
-          ));
-        }).catchError((error) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Failed to add question: $error'),
-          ));
-        });
+          FirebaseFirestore.instance
+              .collection('questions')
+              .add(question.toMap())
+              .then((value) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Question added successfully.'),
+            ));
+          }).catchError((error) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Failed to add question: $error'),
+            ));
+          });
+        }
       });
 
       setState(() {
