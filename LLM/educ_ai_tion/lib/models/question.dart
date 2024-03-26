@@ -14,6 +14,7 @@ class Question {
   final DateTime date;
   final int grade;
   final Subject subject;
+  final String answer;
 
   Question(
       {required this.topic,
@@ -21,7 +22,8 @@ class Question {
       required this.question,
       required this.date,
       required this.grade,
-      required this.subject});
+      required this.subject,
+      required this.answer});
 
   Map<String, dynamic> toMap() {
     return {
@@ -31,19 +33,20 @@ class Question {
       'date': date,
       'grade': grade,
       'subject': subject.toString().split('.').last.toLowerCase(),
+      'answer': answer
     };
   }
 
   factory Question.fromSnapshot(QueryDocumentSnapshot snapshot) {
     final data = snapshot.data() as Map<String, dynamic>;
     return Question(
-      subject: _parseSubject(data['subject']),
-      topic: data['topic'] ?? '',
-      difficulty: _parseDifficulty(data['difficulty']),
-      question: data['question'] ?? '',
-      date: data['date'].toDate() ?? DateTime.now(),
-      grade: data['grade'] ?? 0,
-    );
+        subject: _parseSubject(data['subject']),
+        topic: data['topic'] ?? '',
+        difficulty: _parseDifficulty(data['difficulty']),
+        question: data['question'] ?? '',
+        date: data['date'].toDate() ?? DateTime.now(),
+        grade: data['grade'] ?? 0,
+        answer: data['answer'] ?? '');
   }
 
   static Subject _parseSubject(String? subjectString) {

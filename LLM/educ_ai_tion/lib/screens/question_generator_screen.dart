@@ -29,7 +29,6 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
   int _numberOfQuestions = 1;
   bool _isLoading = false;
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +47,7 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
                 'Select the number of questions and enter your question parameters:'),
             Row(
               children: [
-                Text('Number of Questions: '),
+                const Text('Number of Questions: '),
                 Container(
                   width: 200,
                   child: TextFormField(
@@ -56,7 +55,7 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
                         text: _numberOfQuestionsController),
                     decoration: InputDecoration(
                       labelText: 'Number of Questions',
-                      contentPadding: EdgeInsets.symmetric(
+                      contentPadding: const EdgeInsets.symmetric(
                           vertical: 10.0, horizontal: 10.0),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5.0),
@@ -75,7 +74,7 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
                         ],
                       ),
                     ),
-                    keyboardType: TextInputType.numberWithOptions(
+                    keyboardType: const TextInputType.numberWithOptions(
                         signed: false, decimal: false), // Only allows integers
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly
@@ -162,7 +161,7 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
             TextField(
               controller: _controller,
               decoration: const InputDecoration(
-                hintText: 'Enter your question parameters...',
+                hintText: 'Enter your question details',
                 labelText: 'Question Parameters',
                 contentPadding: EdgeInsets.all(10),
                 border: OutlineInputBorder(),
@@ -188,11 +187,11 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
               ),
             ),
             if (_isLoading)
-          Container(
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          ),
+              Container(
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
           ],
         ),
       ),
@@ -247,7 +246,6 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
       return;
     }
 
-
     if (_selectedSchoolLevel == null ||
         _selectedDifficultyLevel == null ||
         _selectedSubject == null ||
@@ -268,7 +266,7 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
     final int numberOfQuestions = int.parse(_numberOfQuestionsController);
 
     final String prompt =
-        "Create $numberOfQuestions ${_selectedSubject.toString().split('.').last} questions for a ${_selectedSchoolLevel} student at the ${_selectedDifficultyLevel.toString().split('.').last} level with these parameters: ${_controller.text}.";
+        "Create $numberOfQuestions ${_selectedSubject.toString().split('.').last} questions for a ${_selectedSchoolLevel} student at the ${_selectedDifficultyLevel.toString().split('.').last} level with these parameters: ${_controller.text}. Also create an answer key for each question and enclose within parenthesis.";
 
     try {
       final String response =
@@ -301,22 +299,33 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
 
     try {
       final List<String> questionLines = _generatedQuestions.split('\n');
+      final List<String> answers =
+          _extractAnswersFromPrompt(_generatedQuestions);
       final List<Future<void>> savingTasks = [];
 
-      questionLines.forEach((questionText) {
-        final Question question = Question(
-          topic: _controller.text.trim(),
-          difficulty: _selectedDifficultyLevel ?? Difficulty.easy,
-          question: questionText.trim(),
-          date: DateTime.now(),
-          grade: _selectedSchoolLevel ?? 1,
-          subject: _selectedSubject!,
+      if (questionLines.length != answers.length) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Mismatch between questions and answers')),
         );
+        return;
+      }
 
-        FirebaseFirestore.instance
+      for (int i = 0; i < questionLines.length; i++) {
+        final Question question = Question(
+            topic: _controller.text.trim(),
+            difficulty: _selectedDifficultyLevel ?? Difficulty.easy,
+            question: questionLines[i].trim(),
+            date: DateTime.now(),
+            grade: _selectedSchoolLevel ?? 1,
+            subject: _selectedSubject!,
+            answer: answers[i].trim());
+
+        final Future<void> saveTask = FirebaseFirestore.instance
             .collection('questions')
             .add(question.toMap());
-      });
+        savingTasks.add(saveTask);
+      }
 
       await Future.wait(savingTasks);
 
@@ -333,6 +342,20 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
         const SnackBar(content: Text('Failed to save questions.')),
       );
     }
+  }
+
+  List<String> _extractAnswersFromPrompt(String prompt) {
+    final RegExp regExp =
+        RegExp(r'\((.*?)\)'); // Search for the text within the parenthesis
+    final matches = regExp.allMatches(prompt);
+    final List<String> answers = [];
+    for (final match in matches) {
+      final answer = match.group(1);
+      if (answer != null) {
+        answers.add(answer);
+      }
+    }
+    return answers;
   }
 
   void _clearResponse() async {

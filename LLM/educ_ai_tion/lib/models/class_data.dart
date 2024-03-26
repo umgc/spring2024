@@ -2,11 +2,12 @@
 import 'teacher.dart';
 import 'student.dart';
 import 'grade_data.dart';
+import 'subject_enum.dart';
 
 class ClassData {
   String className; //primary key
   Teacher teacher;
-  String subject;
+  Subject subject;
   List<Student> studentList;
 
   ClassData(this.className, this.teacher, this.subject) : studentList = [];
@@ -19,7 +20,7 @@ class ClassData {
     return studentList;
   }
 
-  String getSubject() {
+  Subject getSubject() {
     return subject;
   }
 
