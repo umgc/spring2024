@@ -308,7 +308,12 @@ class _QuestionDataSource extends DataTableSource {
         ),
         DataCell(Text(question.subject.name)),
         DataCell(Text(question.topic)),
-        DataCell(Text(question.question)),
+        DataCell(
+          Tooltip(
+            message: question.question,
+            child: Text(question.question),
+          ),
+        ),
         DataCell(Text(question.grade.toString())),
         DataCell(Text(question.difficulty.name)),
       ],
