@@ -183,15 +183,17 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
             const SizedBox(height: 20),
             Expanded(
               child: SingleChildScrollView(
-                child: Text(_generatedQuestions),
+                child: Text(_generatedQuestions.replaceAll('~', '')),
               ),
             ),
             if (_isLoading)
               Container(
                 child: const Center(
-                  child: CircularProgressIndicator(),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
-              ),
+              )
           ],
         ),
       ),
@@ -266,7 +268,7 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
     final int numberOfQuestions = int.parse(_numberOfQuestionsController);
 
     final String prompt =
-        "Create $numberOfQuestions ${_selectedSubject.toString().split('.').last} questions for a ${_selectedSchoolLevel} student at the ${_selectedDifficultyLevel.toString().split('.').last} level with these parameters: ${_controller.text}. Also create an answer key for each question and enclose within parenthesis.";
+        "Create $numberOfQuestions ${_selectedSubject.toString().split('.').last} questions for a ${_selectedSchoolLevel} student at the ${_selectedDifficultyLevel.toString().split('.').last} level with these parameters: ${_controller.text}. At the end of each question, add delimiter '~'. Also create an answer key for each question and enclose within parenthesis.";
 
     try {
       final String response =
@@ -298,7 +300,7 @@ class _QuestionGeneratorScreenState extends State<QuestionGeneratorScreen> {
     }
 
     try {
-      final List<String> questionLines = _generatedQuestions.split('\n');
+      final List<String> questionLines = _generatedQuestions.split('~');
       final List<String> answers =
           _extractAnswersFromPrompt(_generatedQuestions);
       final List<Future<void>> savingTasks = [];
