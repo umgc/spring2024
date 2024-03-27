@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
+import 'package:http/http.dart' as http;
+import 'package:fluttertoast/fluttertoast.dart';
+import 'dart:async';
+import 'dart:io';
+import 'package:educ_ai_tion/models/assignment_submission.dart';
 
 class HomeworkFileList extends StatefulWidget {
   const HomeworkFileList({Key? key});
@@ -11,70 +14,219 @@ class HomeworkFileList extends StatefulWidget {
 }
 
 class _HomeworkFileState extends State<HomeworkFileList> {
-  final Reference storageRef =
-      FirebaseStorage.instance.ref().child('selected_questions');
+  
+final TextEditingController _controllerOne = TextEditingController();
+  final TextEditingController _controllerTwo = TextEditingController();
+  final TextEditingController _controllerThree = TextEditingController();
+  final TextEditingController _controllerFour = TextEditingController();
 
-  late List<String> fileNames = [];
+  final Reference _storageRef = FirebaseStorage.instance.ref().child('selected_questions');
+  List<String> fileNames = [];
+  String? selectedFile;
+
+  final AssignmentData _assignmentData = AssignmentData(); // Instance of AssignmentData
 
   @override
   void initState() {
     super.initState();
-    getFileNames();
+    _fetchFileNames();
   }
 
-  Future<void> getFileNames() async {
+  Future<void> _fetchFileNames() async {
     try {
-      ListResult result = await storageRef.listAll();
+      final result = await _storageRef.listAll();
+      final names = result.items.map((item) => item.name).where((name) => name.endsWith('.txt')).toList();
       setState(() {
-        fileNames = result.items.map((item) => item.name).toList();
+        fileNames = names;
       });
     } catch (e) {
       print('Error fetching file names: $e');
     }
   }
 
-  Future<void> downloadFile(String fileName) async {
+  Future<void> _fetchFileContent(String fileName) async {
     try {
-      String downloadUrl = await storageRef.child(fileName).getDownloadURL();
+      final downloadUrl = await _storageRef.child(fileName).getDownloadURL();
+      final response = await http.get(Uri.parse(downloadUrl));
 
-      // Open the download URL in a new browser tab
-      if (await canLaunch(downloadUrl)) {
-        await launch(downloadUrl);
+      if (response.statusCode == 200) {
+        setState(() {
+          _controllerOne.text = response.body;
+        });
       } else {
-        throw 'Could not launch $downloadUrl';
+        print('Failed to load file content');
       }
     } catch (e) {
-      print('Error downloading file: $e');
+      print('Error fetching file content: $e');
     }
+  }
+
+  Future<void> _saveSubmission() async {
+    try {
+      // Create a new AssignmentSubmission object with data from text fields
+      AssignmentSubmission submission = AssignmentSubmission(
+        assignmentId: selectedFile ?? '', // Assuming selectedFile contains assignment ID
+        student: Student(
+          firstName: _controllerTwo.text.trim(),
+          lastName: _controllerThree.text.trim(),
+          email: _controllerFour.text.trim(), // Assuming _controllerFour for email field
+        ),
+        answers: _controllerOne.text.trim(),
+        submissionDateTime: DateTime.now(),
+      );
+
+      // Call the addAssignmentSubmission method from AssignmentData to save the submission
+      await _assignmentData.addAssignmentSubmission(submission);
+
+      Fluttertoast.showToast(msg: 'Submission saved to Firebase');
+      _clearFields(); // Clear text fields after successful submission
+    } catch (e) {
+      print('Error saving submission: $e');
+      Fluttertoast.showToast(msg: 'Error saving submission');
+    }
+  }
+
+  void _clearFields() {
+    _controllerOne.clear();
+    _controllerTwo.clear();
+    _controllerThree.clear();
+    _controllerFour.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'Homework Assignment List',
-        onMenuPressed: () {
-          Scaffold.of(context).openDrawer();
-        },
+      appBar: AppBar(
+        title: Text('Grading Screen'),
       ),
-      //drawer: const DrawerMenu(),
       body: Padding(
-        padding: const EdgeInsets.only(top: 30.0),
-        child: ListView.builder(
-          itemCount: fileNames.length,
-          itemBuilder: (context, index) {
-            String fileName = fileNames[index];
-
-            return ListTile(
-              title: Text(fileName),
-              trailing: TextButton(
-                onPressed: () => downloadFile(fileName),
-                child: Text('Download'),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Select Assignment Questions:"),
+            DropdownButton<String>(
+              value: selectedFile,
+              hint: Text('Select a file'),
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedFile = newValue;
+                  _fetchFileContent(newValue!);
+                });
+              },
+              items: fileNames.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 20),
+            Text('File Content:'),
+            TextField(
+              controller: _controllerOne,
+              decoration: InputDecoration(
+                hintText: 'File content will be displayed here',
               ),
-            );
-          },
+              maxLines: 10,
+              readOnly: true,
+            ),
+            SizedBox(height: 20),
+            Text('Student First Name:'),
+            TextField(
+              controller: _controllerTwo,
+              decoration: InputDecoration(
+                hintText: 'Enter student first name',
+              ),
+            ),
+            SizedBox(height: 10),
+            Text('Student Last Name:'),
+            TextField(
+              controller: _controllerThree,
+              decoration: InputDecoration(
+                hintText: 'Enter student last name',
+              ),
+            ),
+            SizedBox(height: 10),
+            Text('Student Email:'),
+            TextField(
+              controller: _controllerFour,
+              decoration: InputDecoration(
+                hintText: 'Enter student email',
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _saveSubmission,
+              child: Text('Save Submission'),
+            ),
+          ],
         ),
       ),
     );
+  }
+}
+
+class AssignmentSubmission {
+  final String assignmentId;
+  final Student student;
+  final String answers;
+  final DateTime submissionDateTime;
+
+  AssignmentSubmission({
+    required this.assignmentId,
+    required this.student,
+    required this.answers,
+    required this.submissionDateTime,
+  });
+}
+
+class Student {
+  final String firstName;
+  final String lastName;
+  final String email;
+
+  Student({
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+  });
+}
+
+class AssignmentData {
+  Future<void> addAssignmentSubmission(AssignmentSubmission submission) async {
+     Future<void> addAssignmentSubmission(AssignmentSubmission submission) async {
+  try {
+  Future<void> addAssignmentSubmission(AssignmentSubmission submission) async {
+  try {
+    await FirebaseFirestore.instance
+        .collection('assignment_submissions')
+        .doc(submission.assignmentId)
+        .set({
+      'studentFirstName': submission.student.firstName,
+      'studentLastName': submission.student.lastName,
+      'studentEmail': submission.student.email,
+      'answers': submission.answers,
+      'submissionDateTime': submission.submissionDateTime,
+    });
+  } catch (e) {
+    print('Error adding assignment submission: $e');
+    throw e;
+  }
+}
+        .collection('assignment_submissions')
+        .doc(submission.assignmentId)
+        .set({
+      'studentFirstName': submission.student.firstName,
+      'studentLastName': submission.student.lastName,
+      'studentEmail': submission.student.email,
+      'answers': submission.answers,
+      'submissionDateTime': submission.submissionDateTime,
+    });
+  } catch (e) {
+    print('Error adding assignment submission: $e');
+    throw e;
+  }
+     }
   }
 }

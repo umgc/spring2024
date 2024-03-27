@@ -37,17 +37,7 @@ class StudentHomePage extends StatelessWidget {
               },
               child: const Text('Download Homework'),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => HomeworkUpload()),
-              );
-                print('Navigate to upload Homework');
-              },
-              child: const Text('Upload Homework'),
-            ),
+            
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
