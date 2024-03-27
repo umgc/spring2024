@@ -1,11 +1,9 @@
-import 'dart:typed_data';
-
-import 'package:educ_ai_tion/services/file_service.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
+import 'package:http/http.dart' as http;
+import 'package:fluttertoast/fluttertoast.dart';
+import 'dart:async';
 
 class HomeworkFileList extends StatefulWidget {
   const HomeworkFileList({Key? key});
@@ -15,44 +13,52 @@ class HomeworkFileList extends StatefulWidget {
 }
 
 class _HomeworkFileState extends State<HomeworkFileList> {
-  final Reference storageRef =
+  final TextEditingController _controllerOne = TextEditingController();
+  final TextEditingController _controllerTwo = TextEditingController();
+  final TextEditingController _controllerThree = TextEditingController();
+  final TextEditingController _controllerFour = TextEditingController();
+  final TextEditingController _controllerFive = TextEditingController();
+
+  final Reference _storageRef =
       FirebaseStorage.instance.ref().child('selected_questions');
-  late List<String> fileNames = [];
-  final FileStorageService _storageService = FileStorageService();
-  Map<String, Uint8List> _pickedFilesBytes = {};
-  Map<String, bool> _pickedFilesSelection = {};
+  List<String> fileNames = [];
+  String? selectedFile;
+
+  final AssignmentData _assignmentData =
+      AssignmentData(); // Instance of AssignmentData
 
   @override
   void initState() {
     super.initState();
-    getFileNames();
+    _fetchFileNames();
   }
 
-  Future<void> getFileNames() async {
+  Future<void> _fetchFileNames() async {
     try {
-      ListResult result = await storageRef.listAll();
+      final result = await _storageRef.listAll();
+      final names = result.items
+          .map((item) => item.name)
+          .where((name) => name.endsWith('.txt'))
+          .toList();
       setState(() {
-        fileNames = result.items.map((item) => item.name).toList();
+        fileNames = names;
       });
     } catch (e) {
       print('Error fetching file names: $e');
     }
   }
 
-  Future<void> _pickFile() async {
-    final result = await FilePicker.platform.pickFiles(
-      allowMultiple: true,
-      withData: true,
-      type: FileType.any, // Keep this to allow any file type
-    );
+  Future<void> _fetchFileContent(String fileName) async {
+    try {
+      final downloadUrl = await _storageRef.child(fileName).getDownloadURL();
+      final response = await http.get(Uri.parse(downloadUrl));
 
-    if (result != null) {
-      for (var file in result.files) {
-        final fileName = file.name ?? '';
-        if (!_pickedFilesSelection.containsKey(fileName)) {
-          _pickedFilesSelection[fileName] = false;
-          _pickedFilesBytes[fileName] = file.bytes!;
-        }
+      if (response.statusCode == 200) {
+        setState(() {
+          _controllerOne.text = response.body;
+        });
+      } else {
+        print('Failed to load file content');
       }
 
       setState(() {});
@@ -93,118 +99,168 @@ class _HomeworkFileState extends State<HomeworkFileList> {
       }
       await getFileNames();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error uploading file: $e")),
-      );
+      print('Error fetching file content: $e');
     }
+  }
+
+  Future<void> _saveSubmission() async {
+    try {
+      // Create a new AssignmentSubmission object with data from text fields
+      AssignmentSubmission submission = AssignmentSubmission(
+        assignmentId:
+            selectedFile ?? '', // Assuming selectedFile contains assignment ID
+        student: Student(
+          firstName: _controllerTwo.text.trim(),
+          lastName: _controllerThree.text.trim(),
+          email: _controllerFour.text
+              .trim(), // Assuming _controllerFour for email field
+        ),
+        answers: _controllerFive.text.trim(),
+        submissionDateTime: DateTime.now(),
+      );
+
+      // Call the addAssignmentSubmission method from AssignmentData to save the submission
+      await _assignmentData.addAssignmentSubmission(submission);
+
+      Fluttertoast.showToast(msg: 'Submission saved to Firebase');
+      _clearFields(); // Clear text fields after successful submission
+    } catch (e) {
+      print('Error saving submission: $e');
+      Fluttertoast.showToast(msg: 'Error saving submission');
+    }
+  }
+
+  void _clearFields() {
+    _controllerOne.clear();
+    _controllerTwo.clear();
+    _controllerThree.clear();
+    _controllerFour.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Homework Management', onMenuPressed: () {}),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            flex: 2, // Takes half of the screen space
-            child: ListView.builder(
-              itemCount: fileNames.length,
-              itemBuilder: (context, index) {
-                String fileName = fileNames[index];
-                return ListTile(
-                  title: Text(fileName),
-                  trailing: TextButton(
-                    onPressed: () {}, // Add logic to download or view the file
-                    child: Text('Download'),
-                  ),
-                );
+      appBar: AppBar(
+        title: Text('Grading Screen'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Select Assignment Questions:"),
+            DropdownButton<String>(
+              value: selectedFile,
+              hint: Text('Select a file'),
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedFile = newValue;
+                  _fetchFileContent(newValue!);
+                });
               },
+              items: fileNames.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
             ),
-          ),
-          Container(
-            height: 2.0, // Height of the separator line
-            color: const Color.fromARGB(
-                255, 137, 39, 176), // Color of the separator line
-          ),
-          Expanded(
-            flex: 1, // Takes the other half of the screen space
-            child: Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _pickedFilesSelection.length,
-                    itemBuilder: (context, index) {
-                      String fileName =
-                          _pickedFilesSelection.keys.elementAt(index);
-                      return CheckboxListTile(
-                        title: Text(fileName),
-                        value: _pickedFilesSelection[fileName],
-                        onChanged: (bool? value) {
-                          setState(() {
-                            _pickedFilesSelection[fileName] = value!;
-                          });
-                        },
-                        secondary: IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () {
-                            setState(() {
-                              _pickedFilesSelection.remove(fileName);
-                              _pickedFilesBytes.remove(fileName);
-                            });
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              right: 4.0), // Add space between buttons
-                          child: ElevatedButton(
-                            onPressed: _pickFile,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromARGB(255, 92, 20, 224),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                            ),
-                            child: const Text('Pick a File'),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 4.0), // Add space between buttons
-                          child: ElevatedButton(
-                            onPressed: _uploadToAI,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  Color.fromARGB(255, 114, 76, 175),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                            ),
-                            child: const Text('Upload Homework'),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            SizedBox(height: 10),
+            Text('File Content:'),
+            TextField(
+              controller: _controllerOne,
+              decoration: InputDecoration(
+                hintText: 'File content will be displayed here',
+              ),
+              maxLines: 10,
+              readOnly: true,
             ),
-          ),
-        ],
+            SizedBox(height: 10),
+            Text('Student First Name:'),
+            TextField(
+              controller: _controllerTwo,
+              decoration: InputDecoration(
+                hintText: 'Enter student first name',
+              ),
+            ),
+            SizedBox(height: 10),
+            Text('Student Last Name:'),
+            TextField(
+              controller: _controllerThree,
+              decoration: InputDecoration(
+                hintText: 'Enter student last name',
+              ),
+            ),
+            SizedBox(height: 10),
+            Text('Student Email:'),
+            TextField(
+              controller: _controllerFour,
+              decoration: InputDecoration(
+                hintText: 'Enter your email',
+              ),
+            ),
+             SizedBox(height: 10),
+            Text('Enter Answers:'),
+            TextField(
+              controller: _controllerFive,
+              decoration: InputDecoration(
+                hintText: 'Enter your answers',
+              ),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: _saveSubmission,
+              child: Text('Save Submission'),
+            ),
+          ],
+        ),
       ),
     );
+  }
+}
+
+class AssignmentSubmission {
+  final String assignmentId;
+  final Student student;
+  final String answers;
+  final DateTime submissionDateTime;
+
+  AssignmentSubmission({
+    required this.assignmentId,
+    required this.student,
+    required this.answers,
+    required this.submissionDateTime,
+  });
+}
+
+class Student {
+  final String firstName;
+  final String lastName;
+  final String email;
+
+  Student({
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+  });
+}
+
+class AssignmentData {
+  Future<void> addAssignmentSubmission(AssignmentSubmission submission) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('assignment_submissions')
+          .doc(submission.assignmentId)
+          .set({
+        'studentFirstName': submission.student.firstName,
+        'studentLastName': submission.student.lastName,
+        'studentEmail': submission.student.email,
+        'answers': submission.answers,
+        'submissionDateTime': submission.submissionDateTime,
+      });
+    } catch (e) {
+      print('Error adding assignment submission: $e');
+      throw e;
+    }
   }
 }

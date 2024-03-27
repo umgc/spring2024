@@ -115,10 +115,11 @@ class _QuestionDisplayScreenState extends State<QuestionDisplayScreen> {
         // Generate the text content based on the selected questions
         String textContent = _selectedQuestions.map((question) {
           return '''
+      Grade: ${question.grade}
+      Subject: ${question.subject.name}
       Topic: ${question.topic}
       Question: ${question.question}
-      Grade: ${question.grade}
-      Difficulty: ${question.difficulty.name}
+      
       ''';
         }).join('\n\n');
         // Get the current date
@@ -251,14 +252,17 @@ class _QuestionDisplayScreenState extends State<QuestionDisplayScreen> {
             child: SingleChildScrollView(
               child: PaginatedDataTable(
                 header: const Text('Questions'),
+                dataRowMinHeight: 100,
+                dataRowMaxHeight: 100,
                 rowsPerPage: 10,
                 columns: const [
                   DataColumn(label: Text('Select')),
                   DataColumn(label: Text('Subject')),
                   DataColumn(label: Text('Topic')),
-                  DataColumn(label: Text('Question')),
                   DataColumn(label: Text('Grade')),
                   DataColumn(label: Text('Difficulty')),
+                  DataColumn(label: Text('Question')),
+                  DataColumn(label: Text('Answer')),
                 ],
                 source: _QuestionDataSource(
                   questions: _filterQuestions(),
@@ -308,16 +312,48 @@ class _QuestionDataSource extends DataTableSource {
         ),
         DataCell(Text(question.subject.name)),
         DataCell(Text(question.topic)),
+        DataCell(Text(question.grade.toString())),
+        DataCell(Text(question.difficulty.name)),
         DataCell(
           Tooltip(
             message: question.question,
-            child: Text(question.question),
+            child: Text(
+              breakStringIntoLines(
+                  question.question, 60), // Adjust 60 according to preference
+            ),
           ),
         ),
-        DataCell(Text(question.grade.toString())),
-        DataCell(Text(question.difficulty.name)),
+        DataCell(
+          Tooltip(
+            message: question.answer,
+            child: Text(question.answer),
+          ),
+        ),
       ],
     );
+  }
+
+  String breakStringIntoLines(String input, int maxCharactersPerLine) {
+    List<String> lines = [];
+    String currentLine = '';
+
+    List<String> words = input.split(' ');
+
+    for (String word in words) {
+      if ((currentLine.length + word.length) <= maxCharactersPerLine) {
+        currentLine += (currentLine.isEmpty ? '' : ' ') + word;
+      } else {
+        lines.add(currentLine);
+        currentLine = word;
+      }
+    }
+
+    // Add the remaining part if any
+    if (currentLine.isNotEmpty) {
+      lines.add(currentLine);
+    }
+
+    return lines.join('\n');
   }
 
   @override
