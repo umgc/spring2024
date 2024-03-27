@@ -1,64 +1,159 @@
-import 'package:educ_ai_tion/widgets/student_app_bar.dart';
+import 'package:educ_ai_tion/screens/homework_screen.dart';
+import 'package:educ_ai_tion/screens/homework_upload_screen.dart';
+import 'package:educ_ai_tion/screens/study_activity.dart';
+import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
+import 'package:educ_ai_tion/widgets/custom_button.dart';
+import 'package:educ_ai_tion/widgets/mobile_button.dart';
 import 'package:flutter/material.dart';
-import 'file_upload_screen.dart';
-import 'question_generator_screen.dart';
-import 'grade_screen.dart';
-import 'settings_screen.dart';
-import 'package:flutter/material.dart';
-import 'homework_screen.dart';
-import 'homework_upload_screen.dart';
-import 'study_activity.dart';
+// Import your custom AppBar and other necessary widgets here
 
-class StudentHomePage extends StatelessWidget {
-  const StudentHomePage({Key? key}) : super(key: key);
+class StudentHomePage extends StatefulWidget {
+  const StudentHomePage({super.key});
+  @override
+  _StudentHomePageState createState() => _StudentHomePageState();
+}
 
+final List<Map<String, dynamic>> studentButtonData = [
+  {
+    'imagePath': 'assets/images/grade_icon.png',
+    'label': 'Download Homework',
+    'destination': HomeworkFileList(),
+  },
+  {
+    'imagePath': 'assets/images/answer_key_icon.png',
+    'label': 'Upload Homework',
+    'destination': HomeworkUpload(),
+  },
+  {
+    'imagePath': 'assets/images/student_icon.png',
+    'label': 'Study Activity',
+    'destination': Activity(),
+  },
+  // Add more buttons as needed
+];
+
+class _StudentHomePageState extends State<StudentHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: StudentAppBar(
-        title: 'Student Home Page',
+      appBar: CustomAppBar(
+        title: 'Student \'s Portal',
         onMenuPressed: () {
           Scaffold.of(context).openDrawer();
         },
       ),
       drawer: const DrawerMenu(),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth > 600) {
+            // For tablets or larger screens
+            return _buildTabletOrLargeScreenLayout();
+          } else {
+            // For smaller screens
+            return _buildMobileLayout();
+          }
+        },
+      ),
+    );
+  }
+
+  List<Widget> generateButtons(BuildContext context) {
+    return studentButtonData.map((data) {
+      return CustomFeatureButton(
+        imagePath: data['imagePath'],
+        label: data['label'],
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => data['destination']),
+          );
+        },
+      );
+    }).toList();
+  }
+
+  Widget _buildTabletOrLargeScreenLayout() {
+    return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('Welcome to ESS'),
-            ElevatedButton(onPressed: ()
-  { Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => HomeworkFileList()),
-              );
-                print('Navigate to View Class screen');
-              },
-              child: const Text('Download Homework'),
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: studentButtonData
+                  .map((buttonData) => CustomFeatureButton(
+                        imagePath: buttonData['imagePath'],
+                        label: buttonData['label'],
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    buttonData['destination']),
+                          );
+                        },
+                      ))
+                  .toList(),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => HomeworkUpload()),
-              );
-                print('Navigate to upload Homework');
-              },
-              child: const Text('Upload Homework'),
+            SizedBox(height: 20), // Space between the buttons and the logo
+            // Logo
+            Image.asset('assets/images/logo.png',
+                width: 420), // Adjust size as needed
+            SizedBox(
+                height:
+                    60), // Space between the logo and the bottom row of buttons
+            /* // Bottom row of buttons
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: bottomButtonData
+                  .map((buttonData) => CustomFeatureButton(
+                        imagePath: buttonData['imagePath'],
+                        label: buttonData['label'],
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    buttonData['destination']),
+                          );
+                        },
+                      ))
+                  .toList(),
+            ), */
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMobileLayout() {
+    return Scaffold(
+      body: SingleChildScrollView(
+        // Use SingleChildScrollView to enable scrolling when needed
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Image.asset('assets/images/logo.png',
+                  width: 400), // Logo at the top
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Activity()),
-                  );
-                print('Navigate to another screen');
-              },
-              child: const Text('Study Activity'),
-            ),
+            ...studentButtonData
+                .map((data) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 20.0),
+                      child: MobileButton(
+                        // Use your custom button widget
+                        imagePath: data['imagePath'],
+                        label: data['label'],
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => data['destination']));
+                        },
+                      ),
+                    ))
+                .toList(),
           ],
         ),
       ),

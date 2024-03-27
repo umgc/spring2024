@@ -1,3 +1,4 @@
+import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../services/file_service.dart';
@@ -83,9 +84,11 @@ class _HomeworkUploadState extends State<HomeworkUpload> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Upload Content'),
-        backgroundColor: Colors.blue[700],
+      appBar: CustomAppBar(
+        title: 'Upload Homework',
+        onMenuPressed: () {
+          Scaffold.of(context).openDrawer();
+        },
       ),
       body: Column(
         children: [

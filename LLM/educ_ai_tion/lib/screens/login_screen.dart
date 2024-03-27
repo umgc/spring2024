@@ -235,70 +235,126 @@ class LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  Widget buildFlexibleButton(String text, VoidCallback onPressed) {
+    return Flexible(
+      fit: FlexFit
+          .tight, // Force the buttons to expand and fill the available space
+      child: ElevatedButton(
+        onPressed: onPressed,
+        child: Text(text),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    print("Building LoginScreen");
+    // Check the screen width to determine layout
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobileLayout = screenWidth < 600; // Threshold for mobile layout
+
+    Widget loginForm = Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(height: 20), // Space between the buttons and the logo
+          // Logo
+          Image.asset('assets/images/logo.png',
+              width: isMobileLayout ? 420 : 600), // Adjust size as needed
+          SizedBox(height: 60),
+          TextField(
+            controller: _emailController,
+            decoration: const InputDecoration(labelText: 'Email'),
+          ),
+          TextField(
+            controller: _passwordController,
+            onChanged: (value) {
+              // Triggered every time the password field changes
+              setState(() {
+                // Check if the password is at least 6 characters long
+                _isPasswordValid = value.length >= 6;
+              });
+            },
+            decoration: InputDecoration(
+              labelText: 'Password',
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _showPassword ? Icons.visibility : Icons.visibility_off,
+                ),
+                onPressed: _togglePasswordVisibility,
+              ),
+            ),
+            obscureText: !_showPassword,
+          ),
+          if (_isSigningUp && _passwordController.text.length < 6)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Password must be at least 6 characters long.',
+                  style: TextStyle(color: Color.fromARGB(255, 63, 16, 151)),
+                ),
+                TextButton(
+                  onPressed: _resetPassword,
+                  child: const Text('Forgot Password?'),
+                ),
+              ],
+            ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              buildFlexibleButton(
+                  _isSigningUp ? 'Sign Up' : 'Sign In', _authenticate),
+              SizedBox(
+                  width: 16), // Optional: Add some space between the buttons
+              buildFlexibleButton(
+                  _isSigningUp ? 'Switch to Login' : 'Switch to Sign Up',
+                  _toggleSignup),
+            ],
+          )
+        ],
+      ),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_isSigningUp ? 'Sign Up' : 'Login'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-            ),
-            TextField(
-              controller: _passwordController,
-              onChanged: (value) {
-                // Triggered every time the password field changes
-                setState(() {
-                  // Check if the password is at least 6 characters long
-                  _isPasswordValid = value.length >= 6;
-                });
-              },
-              decoration: InputDecoration(
-                labelText: 'Password',
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _showPassword ? Icons.visibility : Icons.visibility_off,
-                  ),
-                  onPressed: _togglePasswordVisibility,
+      body: isMobileLayout
+          ? SingleChildScrollView(child: loginForm) // For mobile, use as is
+          : Center(
+              // Center content for non-mobile layouts
+              child: SingleChildScrollView(
+                // Make it scrollable
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          // Define the border here
+                          border: Border.all(
+                            color: Color.fromARGB(
+                                255, 105, 18, 145), // Border color
+                            width: 8, // Border width
+                          ),
+                        ),
+                        child: Image.asset(
+                          'assets/images/teacher.png',
+                          fit: BoxFit.cover, // Image on the left half
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child:
+                          loginForm, // Form on the right half, already wrapped in SingleChildScrollView
+                    ),
+                  ],
                 ),
               ),
-              obscureText: !_showPassword,
             ),
-            if (_isSigningUp && _passwordController.text.length < 6)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Password must be at least 6 characters long.',
-                    style: TextStyle(color: Color.fromARGB(255, 63, 16, 151)),
-                  ),
-                  TextButton(
-                    onPressed: _resetPassword,
-                    child: const Text('Forgot Password?'),
-                  ),
-                ],
-              ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _authenticate,
-              child: Text(_isSigningUp ? 'Sign Up' : 'Sign In'),
-            ),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: _toggleSignup,
-              child:
-                  Text(_isSigningUp ? 'Switch to Login' : 'Switch to Sign Up'),
-            ),
-          ],
-        ),
-      ),
     );
   }
 

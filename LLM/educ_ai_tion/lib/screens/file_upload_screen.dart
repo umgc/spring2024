@@ -1,3 +1,4 @@
+import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../services/file_service.dart';
@@ -77,9 +78,11 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Upload Content'),
-        backgroundColor: Colors.blue[700],
+      appBar: CustomAppBar(
+        title: 'Upload File',
+        onMenuPressed: () {
+          Scaffold.of(context).openDrawer();
+        },
       ),
       body: Column(
         children: [
@@ -114,7 +117,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
               child: ElevatedButton(
                 onPressed: _pickFile,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue[700],
+                  backgroundColor: Color.fromARGB(255, 92, 20, 224),
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -127,7 +130,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
             child: ElevatedButton(
               onPressed: _uploadToAI,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
+                backgroundColor: const Color.fromARGB(255, 114, 76, 175),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),

@@ -48,7 +48,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.yellowAccent,
+      backgroundColor: Color.fromARGB(255, 100, 34, 153),
       title: Row(
         children: [
           const SizedBox(width: 8),
@@ -81,7 +81,7 @@ class DrawerMenu extends StatelessWidget {
         children: <Widget>[
           const DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: Color.fromARGB(255, 52, 43, 184),
             ),
             child: Text('Menu'),
           ),
