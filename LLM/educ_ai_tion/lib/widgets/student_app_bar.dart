@@ -80,50 +80,6 @@ class DrawerMenu extends StatelessWidget {
             ),
             child: Text('Menu'),
           ),
-          /* ListTile(
-            title: const Text('Student Homepage'),
-            onTap: () {
-              Navigator.pop(context); // Close the drawer
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const StudentHomePage()),
-              );
-            },
-          ),
-          ListTile(
-            title: const Text('View a Class'),
-            onTap: () {
-              Navigator.pop(context); // Close the drawer
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const StudentHomePage()),
-              );
-            },
-          ),
-          ListTile(
-            title: const Text('View Grades'),
-            onTap: () {
-              Navigator.pop(context); // Close the drawer
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const StudentHomePage()),
-              );
-            },
-          ),
-          ListTile(
-            title: const Text('Another option'),
-            onTap: () {
-              Navigator.pop(context); // Close the drawer
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const StudentHomePage()),
-              );
-            },
-          ), */
           ListTile(
             title: const Text('Settings'),
             onTap: () {

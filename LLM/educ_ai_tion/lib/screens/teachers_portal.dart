@@ -25,9 +25,9 @@ final List<Map<String, dynamic>> topButtonData = [
     'destination': QuestionGeneratorScreen(),
   },
   {
-    'imagePath': 'assets/images/answer_key_icon.png',
-    'label': 'Upload File',
-    'destination': FileUploadScreen(),
+    'imagePath': 'assets/images/grade_icon.png',
+    'label': 'Grade',
+    'destination': GradingScreen(),
   },
   {
     'type': 'button',
@@ -39,18 +39,13 @@ final List<Map<String, dynamic>> topButtonData = [
 
 final List<Map<String, dynamic>> bottomButtonData = [
   {
-    'imagePath': 'assets/images/grade_icon.png',
-    'label': 'Grade',
-    'destination': GradingScreen(),
-  },
-  {
     'imagePath': 'assets/images/resources_icon.png',
-    'label': 'Archives',
+    'label': 'File Management',
     'destination': QuestionFileList(),
   },
   {
     'imagePath': 'assets/images/activity_icon.png',
-    'label': 'Display Screen',
+    'label': 'Generated Questions',
     'destination': QuestionDisplayScreen(),
   },
 ];

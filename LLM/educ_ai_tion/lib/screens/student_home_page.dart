@@ -15,14 +15,9 @@ class StudentHomePage extends StatefulWidget {
 
 final List<Map<String, dynamic>> studentButtonData = [
   {
-    'imagePath': 'assets/images/grade_icon.png',
-    'label': 'Download Homework',
-    'destination': HomeworkFileList(),
-  },
-  {
     'imagePath': 'assets/images/answer_key_icon.png',
-    'label': 'Upload Homework',
-    'destination': HomeworkUpload(),
+    'label': 'Homework Management',
+    'destination': HomeworkFileList(),
   },
   {
     'imagePath': 'assets/images/student_icon.png',
