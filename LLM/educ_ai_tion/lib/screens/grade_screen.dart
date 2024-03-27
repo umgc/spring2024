@@ -1,6 +1,12 @@
 import 'package:educ_ai_tion/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../services/openai_services.dart'; // Ensure this import matches the location of your OpenAIService class
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:async';
+import 'dart:io';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
+
 
 // Grading Screen
 //
@@ -24,6 +30,49 @@ class _GradingScreenState extends State<GradingScreen> {
 
   final OpenAIService _openAIService =
       OpenAIService(); // Instantiate your OpenAIService
+
+  final Reference storageRef =
+      FirebaseStorage.instance.ref().child('selected_questions');
+  List<String> fileNames = [];
+  String? selectedFile;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchFileNames();
+  }
+
+  Future<void> _fetchFileNames() async {
+    try{
+      final result = await storageRef.listAll();
+      final names = result.items.map((item) => item.name).where((name) => name.endsWith('.txt')).toList();
+      setState((){
+        fileNames = names;
+      });
+      } catch (e) {
+        print('Error fetching file names: $e');
+      }
+    }
+
+ Future<void> _fetchFileContent(String fileName) async {
+  try {
+    final downloadUrl = await storageRef.child(fileName).getDownloadURL();
+    final response = await http.get(Uri.parse(downloadUrl));
+
+    if (response.statusCode == 200) {
+      // If the server returns an OK response, update the text controller
+      setState(() {
+        _controllerOne.text = response.body;
+      });
+    } else {
+      // If the server did not return an OK response, throw an error
+      print('Failed to load file content');
+    }
+  } catch (e) {
+    print('Error fetching file content: $e');
+  }
+}
+  
 
   /// Generates questions based on the input text using the OpenAIService.
   void _generateQuestions() async {
@@ -119,7 +168,26 @@ class _GradingScreenState extends State<GradingScreen> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: [ if (fileNames.isNotEmpty) ...[
+                Text("Select Assignment Questions:"),
+                DropdownButton<String>(
+                  value: selectedFile,
+                  hint: Text('Select a file'),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedFile = newValue;
+                      _fetchFileContent(newValue!); // This function needs to be defined to fetch the content
+                    });
+                  },
+                  items: fileNames.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ],
+              const SizedBox(height: 20),
                 const Text('Copy the assignment questions here:'),
                 TextField(
                   controller: _controllerOne,
