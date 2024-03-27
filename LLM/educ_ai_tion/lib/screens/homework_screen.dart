@@ -19,10 +19,11 @@ class _HomeworkFileState extends State<HomeworkFileList> {
   final TextEditingController _controllerFour = TextEditingController();
   final TextEditingController _controllerFive = TextEditingController();
 
-  final Reference _storageRef =
+ final Reference storageRef =
       FirebaseStorage.instance.ref().child('selected_questions');
   List<String> fileNames = [];
   String? selectedFile;
+
 
   final AssignmentData _assignmentData =
       AssignmentData(); // Instance of AssignmentData
@@ -33,75 +34,38 @@ class _HomeworkFileState extends State<HomeworkFileList> {
     _fetchFileNames();
   }
 
-  Future<void> _fetchFileNames() async {
-    try {
-      final result = await _storageRef.listAll();
-      final names = result.items
-          .map((item) => item.name)
-          .where((name) => name.endsWith('.txt'))
-          .toList();
-      setState(() {
+ 
+
+ Future<void> _fetchFileNames() async {
+    try{
+      final result = await storageRef.listAll();
+      final names = result.items.map((item) => item.name).where((name) => name.endsWith('.txt')).toList();
+      setState((){
         fileNames = names;
       });
-    } catch (e) {
-      print('Error fetching file names: $e');
-    }
-  }
-
-  Future<void> _fetchFileContent(String fileName) async {
-    try {
-      final downloadUrl = await _storageRef.child(fileName).getDownloadURL();
-      final response = await http.get(Uri.parse(downloadUrl));
-
-      if (response.statusCode == 200) {
-        setState(() {
-          _controllerOne.text = response.body;
-        });
-      } else {
-        print('Failed to load file content');
+      } catch (e) {
+        print('Error fetching file names: $e');
       }
-
-      setState(() {});
     }
+
+ Future<void> _fetchFileContent(String fileName) async {
+  try {
+    final downloadUrl = await storageRef.child(fileName).getDownloadURL();
+    final response = await http.get(Uri.parse(downloadUrl));
+
+    if (response.statusCode == 200) {
+      // If the server returns an OK response, update the text controller
+      setState(() {
+        _controllerOne.text = response.body;
+      });
+    } else {
+      // If the server did not return an OK response, throw an error
+      print('Failed to load file content');
+    }
+  } catch (e) {
+    print('Error fetching file content: $e');
   }
-
-  Future<void> _uploadToAI() async {
-    if (_pickedFilesSelection.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("No files selected")),
-      );
-      return;
-    }
-
-    var filesToUpload = _pickedFilesSelection.keys
-        .where((name) => _pickedFilesSelection[name]!)
-        .toList();
-
-    if (filesToUpload.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("No files selected to upload")),
-      );
-      return;
-    }
-
-    try {
-      for (String fileName in filesToUpload) {
-        Uint8List fileBytes =
-            _pickedFilesBytes[fileName]!; // Use bytes directly
-        await _storageService.uploadFile(fileName, fileBytes); // Upload file
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Uploaded file to Storage: $fileName")),
-        );
-        setState(() {
-          _pickedFilesSelection.remove(fileName);
-          _pickedFilesBytes.remove(fileName);
-        });
-      }
-      await getFileNames();
-    } catch (e) {
-      print('Error fetching file content: $e');
-    }
-  }
+}
 
   Future<void> _saveSubmission() async {
     try {
